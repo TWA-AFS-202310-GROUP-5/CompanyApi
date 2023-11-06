@@ -123,6 +123,18 @@ namespace CompanyApiTest
             Assert.Equal(HttpStatusCode.OK, httpResponseMessage.StatusCode);
         }
 
+        [Fact]
+        public async Task Should_return_status_not_found_when_get_given_not_found_the_company_with_id()
+        {
+            //Given
 
+            //When
+            HttpResponseMessage message = await httpClient.GetAsync($"api/companies/{new Guid()}");
+            Company? compantReturnedFromGet = await message.Content.ReadFromJsonAsync<Company>();
+
+            //Then
+            Assert.Null(compantReturnedFromGet?.Name);
+            Assert.Equal(HttpStatusCode.NotFound, message.StatusCode);
+        }
     }
 }
