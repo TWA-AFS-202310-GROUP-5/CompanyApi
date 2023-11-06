@@ -19,6 +19,15 @@ namespace CompanyApi.Controllers
             companies.Add(companyCreated);
             return StatusCode(StatusCodes.Status201Created, companyCreated);
         }
+
+        [HttpGet("{id}")]
+        public ActionResult<Company> GetOne(string id)
+        {
+            var company = companies.FirstOrDefault(company => company.Id == id);
+
+
+            return StatusCode(StatusCodes.Status200OK, company);
+        }
         [HttpGet]
         public ActionResult<List<Company>> GetAll()
         {

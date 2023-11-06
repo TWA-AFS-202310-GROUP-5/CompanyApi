@@ -90,6 +90,27 @@ namespace CompanyApiTest
             Assert.Equal(2, companies.Count);
         }
 
+
+        [Fact]
+        public async Task Should_return_a_company_when_get_company_given_company_name()
+        {
+            // Given
+            ClearDataAsync();
+            var companyGiven1 = new CreateCompanyRequest { Name = "BlueSky Digital Media 1" };
+
+            // When
+            HttpResponseMessage createdResponseMessage = await httpClient.PostAsJsonAsync("/api/companies", companyGiven1);
+            var createdCompany = await DeserializeTo<Company>(createdResponseMessage);
+            HttpResponseMessage getResponseMessage = await httpClient.GetAsync($"/api/companies/{createdCompany.Id}");
+
+            var company = await DeserializeTo<Company>(getResponseMessage);
+
+            // Then
+            Assert.Equal(HttpStatusCode.OK, getResponseMessage.StatusCode);
+            Assert.Equal(createdCompany.Id, company.Id);
+
+        }
+
         private async Task<T?> DeserializeTo<T>(HttpResponseMessage httpResponseMessage)
         {
             string response = await httpResponseMessage.Content.ReadAsStringAsync();
