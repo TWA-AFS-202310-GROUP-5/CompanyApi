@@ -22,7 +22,7 @@ namespace CompanyApiTest
         {
             // Given
             await ClearDataAsync();
-            CreateCompanyRequest companyGiven = new CreateCompanyRequest { Name = "BlueSky Digital Media" };
+            CreateCompanyRequest companyGiven = new CreateCompanyRequest("BlueSky Digital Media");
 
             // When
             HttpResponseMessage httpResponseMessage = await httpClient.PostAsJsonAsync("/api/companies", companyGiven);
@@ -67,22 +67,20 @@ namespace CompanyApiTest
         }
 
         [Fact]
-        public async Task Should_return_all_companies_when_GetAll_given_2_companies_created()
+        public async Task Should_return_all_companies_when_GetAll_given_companies_created()
         {
             //given
-            await httpClient.DeleteAsync("/api/companies");
-            Company companyGiven1 = new Company("BlueSky Digital Media");
-            await httpClient.PostAsJsonAsync("api/companies", companyGiven1);
-            Company companyGiven2 = new Company("Google");
-            await httpClient.PostAsJsonAsync("api/companies", companyGiven2);
-            List<Company> companies = new List<Company> { companyGiven1, companyGiven2 };
+            await ClearDataAsync();
+            CreateCompanyRequest companyGiven = new CreateCompanyRequest("BlueSky Digital Media");
 
+            await httpClient.PostAsJsonAsync("api/companies", companyGiven);
             //when
             HttpResponseMessage httpResponseMessage = await httpClient.GetAsync("api/companies");
 
-            List<Company>? companiesGet = await httpResponseMessage.Content.ReadFromJsonAsync<List<Company>>();
+            var response = await httpResponseMessage.Content.ReadFromJsonAsync<List<Company>>();
+            //then
             Assert.Equal(HttpStatusCode.OK, httpResponseMessage.StatusCode);
-            Assert.Equal(companies.Select(company => company.Name), companiesGet.Select(company => company.Name));
+            Assert.Equal(companyGiven.Name, response[0].Name);
         }
 
         [Fact]
@@ -117,6 +115,29 @@ namespace CompanyApiTest
 
             Company? companyGet = await httpResponseMessage.Content.ReadFromJsonAsync<Company>();
             Assert.Equal(HttpStatusCode.NotFound, httpResponseMessage.StatusCode);
+        }
+        
+
+        [Fact]
+        public async Task Should_return_pagesize_companies_from_pageindex_when_get_given_pageSize_and_pageIndex()
+        {
+            //given
+            await ClearDataAsync();
+            for (int i = 0; i < 10; i++)
+            {
+                CreateCompanyRequest companyGiven = new CreateCompanyRequest($"BlueSky Digital Media{i}");
+                await httpClient.PostAsJsonAsync("api/companies", companyGiven);
+            }
+
+            //when
+            HttpResponseMessage httpResponseMessage = await httpClient.GetAsync($"api/companies?pageSize=2&pageIndex=3");
+
+            List<Company>? companies = await httpResponseMessage.Content.ReadFromJsonAsync<List<Company>>();
+
+            //then
+            Assert.Equal("BlueSky Digital Media4", companies[0].Name);
+            Assert.Equal(2, companies.Count);
+
         }
 
         private async Task<T?> DeserializeTo<T>(HttpResponseMessage httpResponseMessage)

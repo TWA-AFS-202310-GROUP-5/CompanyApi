@@ -28,23 +28,35 @@ namespace CompanyApi.Controllers
         }
 
         [HttpGet]
-        public ActionResult<List<Company>> GetAll()
+        public ActionResult<List<Company>> Get([FromQuery] string pageSize, [FromQuery] string pageIndex)
         {
-            return StatusCode(StatusCodes.Status200OK, companies);
+            int pageSizeNum = int.Parse(pageSize);
+            int pageIndexNum = int.Parse(pageIndex);
+            if (companies.Count() < int.Parse(pageSize) * int.Parse(pageIndex))
+            {
+                return NotFound();
+            }
+            else
+            {
+                return StatusCode(StatusCodes.Status200OK, companies.Skip(pageSizeNum * (pageIndexNum - 1)).Take(pageSizeNum).ToList());
+            }
         }
 
         [HttpGet("{id}")]
         public ActionResult<Company> Get(string id)
         {
-            foreach (Company company in companies)
+            var company = companies.Where(c => c.Id == id).FirstOrDefault();
+            if (company == null)
             {
-                if (company.Id == id) 
-                {
-                    return company;
-                }
-            }   
-            return NotFound();
+                return NotFound();
+            }
+            else
+            {
+                return Ok(company);
+            }
         }
 
+        
+        
     }
 }
