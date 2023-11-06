@@ -2,6 +2,7 @@ using CompanyApi;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Newtonsoft.Json;
 using System.Net;
+using System.Net.Http.Json;
 using System.Text;
 
 namespace CompanyApiTest
@@ -9,7 +10,7 @@ namespace CompanyApiTest
     public class CompanyApiTest
     {
         private HttpClient httpClient;
-
+        private string companyUri = "/api/companies";
         public CompanyApiTest()
         {
             WebApplicationFactory<Program> webApplicationFactory = new WebApplicationFactory<Program>();
@@ -66,6 +67,27 @@ namespace CompanyApiTest
            
             // Then
             Assert.Equal(HttpStatusCode.BadRequest, httpResponseMessage.StatusCode);
+        }
+
+        [Theory]
+        [InlineData(1)]
+        [InlineData(10)]
+        public async Task Should_return_all_company_when_getAll_given_exist_sevral_company(int companyNum)
+        {
+            await ClearDataAsync();
+            List<Company> givenCompanyList = new List<Company>();
+            for (int i=0; i< companyNum; i++)
+            {
+                Company companyTemp = new Company("Test Company" + i);
+                givenCompanyList.Add(companyTemp);
+                HttpResponseMessage httpResponseMessageTemp = await httpClient.PostAsJsonAsync(companyUri, companyTemp);
+            }
+
+            List<Company> resultCompanyList = await httpClient.GetFromJsonAsync<List<Company>>(companyUri);
+
+            Assert.Equal(givenCompanyList, resultCompanyList);
+
+
         }
 
         private async Task<T?> DeserializeTo<T>(HttpResponseMessage httpResponseMessage)
