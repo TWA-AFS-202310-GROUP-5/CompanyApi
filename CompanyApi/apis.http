@@ -59,3 +59,22 @@ Content-Type: application/json; charset=utf-8
 ### Case2: 404 Company NOT Found
 
 ######################################################################################
+
+######################################################################################
+
+## AC6 add employee 
+POST  https://{{hostname}}:{{port}}/api/employees/{companyId}
+Content-Type: application/json; charset=utf-8
+
+{
+
+  "name": "Zhang san"
+}
+
+## Response:
+### Case1:  employee  Created Success, Return employee  created with Status Created( 201 )
+### Case2:  employee 
+Name Exsiting, Return 400 Bad request
+### Case3:  Other Bad Reqeust ( Request Body Not Valid )
+
+######################################################################################

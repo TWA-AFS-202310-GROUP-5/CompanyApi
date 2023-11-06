@@ -141,7 +141,7 @@ namespace CompanyApiTest
             var updateCompanyRequest = new UpdateCompanyRequest { Name = "New name" };
             var updateString = SerializeObjectToContent(updateCompanyRequest);
             HttpResponseMessage getResponseMessage = await httpClient.PutAsync($"/api/companies/{createdCompany.Id}",updateString);
-
+            
             // Then
             Assert.Equal(HttpStatusCode.NoContent, getResponseMessage.StatusCode);
 
@@ -179,7 +179,6 @@ namespace CompanyApiTest
                  await httpClient.PostAsJsonAsync("/api/companies", uCompanyRequests[i]);
 
             }
-
 
             var companies = await httpClient.GetFromJsonAsync<List<Company>>("api/companies/2/3");
             Assert.Equal(2,companies.Count);
