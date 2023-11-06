@@ -177,6 +177,8 @@ namespace CompanyApiTest
             return deserializedObject;
         }
 
+        
+
         private static StringContent SerializeObjectToContent<T>(T objectGiven)
         {
             return new StringContent(JsonConvert.SerializeObject(objectGiven), Encoding.UTF8, "application/json");

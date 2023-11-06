@@ -59,3 +59,16 @@ Content-Type: application/json; charset=utf-8
 ### Case2: 404 Company NOT Found
 
 ######################################################################################
+
+## AC6 Crete Employee By Company ID
+POST https://{{hostname}}:{{port}}/api/companies/{companyId}
+
+{
+  "Name": 
+  "CompanyId"
+}
+## Response:
+### Case1:  Employee Created Success, Return Employee created with Status Created( 201 )
+### Case2:  CompanyId not exists, return 400 Bad request
+### Case3:  Employee existing, reutrn 400 bad request
+### Case3:  Other Bad Reqeust ( Request Body Not Valid )
