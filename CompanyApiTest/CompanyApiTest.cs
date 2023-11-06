@@ -95,14 +95,15 @@ namespace CompanyApiTest
             Company companyGiven2 = new Company("Google");
             await httpClient.PostAsJsonAsync("api/companies", companyGiven2);
            
-            var company = await httpResponseMessage1.Content.ReadFromJsonAsync<Company>();
+            var company1 = await httpResponseMessage1.Content.ReadFromJsonAsync<Company>();
 
             //when
-            HttpResponseMessage httpResponseMessage = await httpClient.GetAsync($"api/companies/{company?.Id}");
+            HttpResponseMessage httpResponseMessage = await httpClient.GetAsync($"api/companies/{company1?.Id}");
 
             Company? companyGet = await DeserializeTo<Company>(httpResponseMessage);
             Assert.Equal(HttpStatusCode.OK, httpResponseMessage.StatusCode);
-            Assert.Equal(companyGiven1.Name, companyGet?.Name);
+            Assert.Equal(company1.Name, companyGet.Name);
+            Assert.Equal(company1.Id, companyGet.Id);
         }
 
         [Fact]
