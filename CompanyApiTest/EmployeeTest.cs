@@ -48,7 +48,21 @@ namespace CompanyApiTest
             Assert.Equal(HttpStatusCode.BadRequest, httpResponseMessage.StatusCode);
         }
 
-        
+        [Fact]
+        public async Task Should_return_400_bad_request_when_create_employee_given_existed_employee()
+        {
+            //given
+            await ClearDataAsync();
+            CreateCompanyRequest companyRequest = new CreateCompanyRequest { Name = "Google" };
+            HttpResponseMessage httpResponseMessage1 = await httpClient.PostAsJsonAsync("/api/companies", companyRequest);
+            Company company = await httpResponseMessage1.Content.ReadFromJsonAsync<Company>();
+            CreateEmployeeRequest employeeRequest = new CreateEmployeeRequest { Name = "111" };
+            await httpClient.PostAsJsonAsync($"api/companies/{company.Id}", employeeRequest);
+            //when
+            HttpResponseMessage httpResponseMessage = await httpClient.PostAsJsonAsync($"api/companies/{company.Id}", employeeRequest);
+            //then
+            Assert.Equal(HttpStatusCode.BadRequest, httpResponseMessage.StatusCode);
+        }
 
 
 
