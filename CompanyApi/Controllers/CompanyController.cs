@@ -11,7 +11,7 @@ namespace CompanyApi.Controllers
         [HttpPost]
         public ActionResult<Company> Create(CreateCompanyRequest request)
         {
-            if (companies.Exists(company => company.Name.Equals(request.Name)))
+            if (hasCompany(request.Name))
             {
                 return BadRequest();
             }
@@ -24,6 +24,17 @@ namespace CompanyApi.Controllers
         public void ClearData()
         { 
             companies.Clear();
+        }
+
+        [HttpGet]
+        public ActionResult<Company> Get(int id)
+        {
+
+        }
+
+        private bool hasCompany(string name)
+        {
+            return companies.Exists(company => company.Name.Equals(name));
         }
     }
 }
