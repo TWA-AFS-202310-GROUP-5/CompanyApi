@@ -98,5 +98,35 @@ namespace CompanyApi.Controllers
                 return Created("", newEmployee);
             }
         }
+
+        [HttpDelete("{companyId}/employees/{employeeId}")]
+        public ActionResult DeleteEmployee(string companyId, string employeeId)
+        {
+            var company = companies.FirstOrDefault(c => c.Id == companyId);
+            var employee = company?.Employees.FirstOrDefault(e => e.Id == employeeId);
+            if (employee == null)
+            {
+                return NotFound();
+            }
+            else
+            {
+                company.Employees.Remove(employee);
+                return NoContent();
+            }
+        }
+
+        [HttpGet("{companyId}/employees")]
+        public ActionResult<List<Employee>> GetEmployeesByCompanyId(string companyId)
+        {
+            var company = companies.FirstOrDefault(c => c.Id == companyId);
+            if (company == null)
+            {
+                return NotFound();
+            }
+            else
+            {
+                return Ok(company.Employees);
+            }
+        }
     }
 }

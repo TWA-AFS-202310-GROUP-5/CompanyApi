@@ -205,8 +205,57 @@ namespace CompanyApiTest
 
             //then
             Assert.Equal(HttpStatusCode.NotFound, httpResponseMessage.StatusCode);
-
         }
+
+        [Fact]
+        public async Task Should_return_204_when_delete_specific_employee_given_valid_companyId_and_EmployeeId()
+        {
+            //given
+            await ClearDataAsync();
+
+            CreateCompanyRequest companyGiven = new CreateCompanyRequest("BlueSky Digital Media");
+            HttpResponseMessage httpResponseMessage = await httpClient.PostAsJsonAsync("api/companies", companyGiven);
+            var company = await httpResponseMessage.Content.ReadFromJsonAsync<Company>();
+
+            var employee = new EmployeeRequest(30000, "AA");
+
+            HttpResponseMessage httpResponseMessage2 = await httpClient.PostAsJsonAsync($"api/companies/{company.Id}/employees", employee);
+
+            var employee2 = await httpResponseMessage2.Content.ReadFromJsonAsync<Employee>();
+
+            //when
+            HttpResponseMessage httpResponseMessageFinal = await httpClient.DeleteAsync($"/api/companies/{company.Id}/employees/{employee2.Id}");
+
+            //then
+            Assert.Equal(HttpStatusCode.NoContent, httpResponseMessageFinal.StatusCode);
+        }
+
+        [Fact]
+        public async Task Should_return_all_Employees_in_the_company_when_get_given_companyId()
+        {
+            //given
+            await ClearDataAsync();
+
+            CreateCompanyRequest companyGiven = new CreateCompanyRequest("BlueSky Digital Media");
+            HttpResponseMessage httpResponseMessage = await httpClient.PostAsJsonAsync("api/companies", companyGiven);
+            var company = await httpResponseMessage.Content.ReadFromJsonAsync<Company>();
+            var employee = new EmployeeRequest(1000, "AA");
+            var employee2 = new EmployeeRequest(2000, "BB");
+
+            await httpClient.PostAsJsonAsync($"api/companies/{company.Id}/employees", employee);
+            await httpClient.PostAsJsonAsync($"api/companies/{company.Id}/employees", employee2);
+
+            //when
+            HttpResponseMessage httpResponseMessage2 = await httpClient.GetAsync($"api/companies/{company.Id}/employees");
+            var employees = await httpResponseMessage2.Content.ReadFromJsonAsync<List<Employee>>();
+
+            //then
+            Assert.Equal(HttpStatusCode.OK, httpResponseMessage2.StatusCode);
+            Assert.Equal(2, employees.Count);
+            Assert.Equal(employee.Name, employees[0].Name);
+            Assert.Equal(employee2.Name, employees[1].Name);
+        }
+
         private async Task<T?> DeserializeTo<T>(HttpResponseMessage httpResponseMessage)
         {
             string response = await httpResponseMessage.Content.ReadAsStringAsync();
