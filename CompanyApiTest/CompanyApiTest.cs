@@ -1,4 +1,5 @@
 using CompanyApi;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Newtonsoft.Json;
 using System.Net;
@@ -97,6 +98,41 @@ namespace CompanyApiTest
             List<Company> resultCompanyList = await httpClient.GetFromJsonAsync<List<Company>>(companyUri);
 
             Assert.Empty(resultCompanyList);
+
+        }
+
+        [Fact]
+        public async Task Should_return_404_NOTFOUND_when_get_company_given_no_exist_Id()
+        {
+            await ClearDataAsync();
+            List<CreateCompanyRequest> givenCompanyList = new List<CreateCompanyRequest>();
+            CreateCompanyRequest companyTemp = new CreateCompanyRequest { Name = "Test" };
+            givenCompanyList.Add(companyTemp);
+            HttpResponseMessage httpResponseMessage1 = await httpClient.PostAsJsonAsync(companyUri, companyTemp);
+
+            string fakeId = "fake id 111";
+            HttpResponseMessage httpResponseMessage2 = await httpClient.GetAsync(companyUri + "/" + fakeId);
+
+            Assert.Equal(HttpStatusCode.BadRequest, httpResponseMessage2.StatusCode);
+
+        }
+
+        [Fact]
+        public async Task Should_return_200OK_and_company_when_get_company_given_correct_Id()
+        {
+            await ClearDataAsync();
+            List<CreateCompanyRequest> givenCompanyList = new List<CreateCompanyRequest>();
+            CreateCompanyRequest companyTemp = new CreateCompanyRequest { Name = "Test" };
+            givenCompanyList.Add(companyTemp);
+            HttpResponseMessage httpResponseMessage1 = await httpClient.PostAsJsonAsync(companyUri, companyTemp);
+            Company company = await httpResponseMessage1.Content.ReadFromJsonAsync<Company>();
+
+            HttpResponseMessage httpResponseMessage2 = await httpClient.GetAsync(companyUri + "/" + company.Id);
+            Company company1 = await httpResponseMessage2.Content.ReadFromJsonAsync<Company>();
+
+            Assert.Equal(HttpStatusCode.OK, httpResponseMessage2.StatusCode);
+            Assert.Equal(company.Name, company1.Name);
+            Assert.Equal(company.Id, company1.Id);
 
         }
 

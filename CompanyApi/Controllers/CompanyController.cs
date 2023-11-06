@@ -23,7 +23,18 @@ namespace CompanyApi.Controllers
         [HttpGet]
         public ActionResult<List<Company>> GetAll()
         {
-            return companies;
+            return StatusCode(StatusCodes.Status200OK, companies);
+        }
+
+        [HttpGet("{id}")]
+        public ActionResult<Company> GetCompanyById(string id)
+        {
+            Company company = companies.FirstOrDefault(x => x.Id == id);
+            if (company == null)
+            {
+                return BadRequest();
+            }
+            return StatusCode(StatusCodes.Status200OK, company);
         }
 
         [HttpDelete]
