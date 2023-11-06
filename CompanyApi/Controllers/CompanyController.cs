@@ -25,6 +25,7 @@ namespace CompanyApi.Controllers
         public void ClearData()
         {
             companies.Clear();
+            employees.Clear();
         }
 
         [HttpGet("{id}")]

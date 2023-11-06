@@ -79,7 +79,7 @@ Content-Type: application/json; charset=utf-8
 
 
 ## AC6 Create Employee API 
-PUT https://{{hostname}}:{{port}}/api/companies/companyId/employees
+PUT https://{{hostname}}:{{port}}/api/companies/{companyId}/employees
 Content-Type: application/json; charset=utf-8
 
 {
@@ -93,24 +93,24 @@ Content-Type: application/json; charset=utf-8
 ######################################################################################
 
 ## AC7 Delete Employee by ID 
-DELETE https://{{hostname}}:{{port}}/api/companies/companyId/employees/{employeeId}
+DELETE https://{{hostname}}:{{port}}/api/companies/{companyId}/employees/{employeeId}
 Content-Type: application/json; charset=utf-8
 
 ### Response: 
 ### Case1:  Employee Deleted Success, Return Employee in the company with companyId found with Status NO CONTENT( 204 )
-### Case2:  Employee Not Found, Return Status NOT FOUND( 404 )
+### Case2:  Employee/Company Not Found, Return Status NOT FOUND( 404 )
 
 ######################################################################################
 
 ## AC8 Get All Employees in company with companyId
-GET https://{{hostname}}:{{port}}/api/companies/companyId/employees
+GET https://{{hostname}}:{{port}}/api/companies/{companyId}/employees
 
 ### Response: OK 200 with List of Employees in the company with companyId
 
 ######################################################################################
 
 ## AC9 Update Employee
-PUT https://{{hostname}}:{{port}}/api/companies/companyId/employees/{employeeId}
+PUT https://{{hostname}}:{{port}}/api/companies/{companyId}/employees/{employeeId}
 Content-Type: application/json; charset=utf-8
 
 {

@@ -283,5 +283,40 @@ namespace CompanyApiTest
             Assert.Null(employeeCreated?.Name);
             Assert.Equal(HttpStatusCode.BadRequest, httpResponseMessage.StatusCode);
         }
+
+        [Fact]
+        public async Task Should_return_deleted_employee_with_204_given_delete_with_companyId_and_employeeId()
+        {
+            // Given
+            CreateCompanyRequest companyGiven = new CreateCompanyRequest { Name = "BlueSky Digital Media" };
+            HttpResponseMessage httpResponseMessage = await httpClient.PostAsJsonAsync("/api/companies",
+                companyGiven);
+            Company? companyCreated = await httpResponseMessage.Content.ReadFromJsonAsync<Company>();
+            CreateEmployeeRequest employeeGiven = new CreateEmployeeRequest { Name = "John" };
+            httpResponseMessage = await httpClient.PostAsJsonAsync($"/api/companies/{companyCreated?.Id}/employees", employeeGiven);
+            Employee? employeeCreated = await httpResponseMessage.Content.ReadFromJsonAsync<Employee>();
+
+            // When
+            httpResponseMessage = await httpClient.DeleteAsync($"/api/companies/{companyCreated?.Id}/employees/{employeeCreated?.Id}");
+            Employee? employeeDeleted = await httpResponseMessage.Content.ReadFromJsonAsync<Employee>();
+
+            // Then
+            Assert.Equal(employeeCreated, employeeDeleted);
+            Assert.Equal(HttpStatusCode.NoContent, httpResponseMessage.StatusCode);
+        }
+
+        [Fact]
+        public async Task Should_return_nothing_with_notfound_given_delete_with_wrong_companyId_and_wrong_employeeId()
+        {
+            // Given
+
+            // When
+            var httpResponseMessage = await httpClient.DeleteAsync($"/api/companies/{new Guid()}/employees/{new Guid()}");
+            Employee? employeeDeleted = await httpResponseMessage.Content.ReadFromJsonAsync<Employee>();
+
+            // Then
+            Assert.Null(employeeDeleted?.Name);
+            Assert.Equal(HttpStatusCode.NotFound, httpResponseMessage.StatusCode);
+        }
     }
 }
