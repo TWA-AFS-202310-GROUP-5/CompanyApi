@@ -136,5 +136,43 @@ namespace CompanyApiTest
             Assert.Null(compantReturnedFromGet?.Name);
             Assert.Equal(HttpStatusCode.NotFound, message.StatusCode);
         }
+
+        [Fact]
+        public async Task Should_return_companies_in_given_page_with_status_ok_when_get_all_given_exists_companies_and_pageSize_and_pageIndex()
+        {
+            //Given
+            CreateCompanyRequest companyGiven1 = new CreateCompanyRequest { Name = "BlueSky Digital Media" };
+            CreateCompanyRequest companyGiven2 = new CreateCompanyRequest { Name = "Google" };
+            CreateCompanyRequest companyGiven3 = new CreateCompanyRequest { Name = "Amazon" };
+            CreateCompanyRequest companyGiven4 = new CreateCompanyRequest { Name = "Apple" };
+            await httpClient.PostAsJsonAsync("/api/companies", companyGiven1);
+            await httpClient.PostAsJsonAsync("/api/companies", companyGiven2);
+            await httpClient.PostAsJsonAsync("/api/companies", companyGiven3);
+            await httpClient.PostAsJsonAsync("/api/companies", companyGiven4);
+
+            //When
+            HttpResponseMessage httpResponseMessage = await httpClient.GetAsync("/api/companies?pageSize=2&pageIndex=2");
+            List<Company>? result = await httpResponseMessage.Content.ReadFromJsonAsync<List<Company>>();
+
+            //Then
+            Assert.Equal(2, result?.Count);
+            Assert.Equal(companyGiven3.Name, result?[0].Name);
+            Assert.Equal(companyGiven4.Name, result?[1].Name);
+            Assert.Equal(HttpStatusCode.OK, httpResponseMessage.StatusCode);
+        }
+
+        [Fact]
+        public async Task Should_return_nothing_with_status_ok_when_get_all_given_not_enought_companies_for_pageSize_and_pageIndex()
+        {
+            //Given
+
+            //When
+            HttpResponseMessage httpResponseMessage = await httpClient.GetAsync("/api/companies?pageSize=2&pageIndex=2");
+            List<Company>? result = await httpResponseMessage.Content.ReadFromJsonAsync<List<Company>>();
+
+            //Then
+            Assert.Equal(0, result?.Count);
+            Assert.Equal(HttpStatusCode.OK, httpResponseMessage.StatusCode);
+        }
     }
 }
