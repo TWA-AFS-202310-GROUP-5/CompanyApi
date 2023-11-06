@@ -7,7 +7,7 @@ namespace CompanyApi.Controllers
     public class CompanyController : ControllerBase
     {
         private static List<Company> companies = new List<Company>();
-        private static Dictionary<string, Employee> employees = new Dictionary<string, Employee>();
+        private static Dictionary<string, List<Employee>> employees = new Dictionary<string, List<Employee>>();
 
         [HttpPost]
         public ActionResult<Company> Create(CreateCompanyRequest request)
@@ -69,6 +69,28 @@ namespace CompanyApi.Controllers
             return companies.Find(company => company.Id.Equals(id));
         }
 
+        [HttpPost("{companyId}/employees")]
+        public ActionResult<Company> Create([FromRoute] string companyId, CreateEmployeeRequest request)
+        {
+            Company? company = GetCompanyById(companyId);
+            if (company is null)
+            {
+                return BadRequest();
+            }
 
+            if(!employees.ContainsKey(companyId))
+            {
+                employees[companyId] = new List<Employee>();
+            }
+
+            if(employees[companyId].Find(employee => employee.Name == request.Name) is not null)
+            {
+                return BadRequest();
+            }
+
+            Employee employeeCreated = new Employee(request.Name);
+            employees[companyId].Add(employeeCreated);
+            return StatusCode(StatusCodes.Status201Created, employeeCreated);
+        }
     }
 }
