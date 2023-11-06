@@ -22,7 +22,7 @@ namespace CompanyApi.Controllers
 
         [HttpDelete]
         public void ClearData()
-        { 
+        {
             companies.Clear();
         }
 
@@ -38,9 +38,10 @@ namespace CompanyApi.Controllers
         }
 
         [HttpGet]
-        public ActionResult<List<Company>> GetAll()
+        public ActionResult<List<Company>> GetCompanyByPage([FromQuery] int pageSize = 0, int pageIndex = 0)
         {
-            return StatusCode(StatusCodes.Status200OK, companies);
+            var returnCompanies = pageSize > 0 ? companies.Skip(pageSize * (pageIndex - 1)).Take(pageSize) : companies;
+            return StatusCode(StatusCodes.Status200OK, returnCompanies);
         }
 
         private bool HasCompanyName(string name)
@@ -50,7 +51,7 @@ namespace CompanyApi.Controllers
 
         private Company? GetCompanyById(string id)
         {
-            return companies.Where(company => company.Id.Equals(id)).FirstOrDefault();
+            return companies.Find(company => company.Id.Equals(id));
         }
     }
 }

@@ -15,7 +15,7 @@
         public override bool Equals(object? obj)
         {
             Company? company = obj as Company;
-            return Id.Equals(company?.Id);
+            return Id.Equals(company?.Id) && Name.Equals(company?.Name);
         }
 
         public override int GetHashCode()
