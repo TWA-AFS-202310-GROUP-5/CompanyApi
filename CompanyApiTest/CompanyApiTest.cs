@@ -2,6 +2,7 @@ using CompanyApi;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Newtonsoft.Json;
 using System.Net;
+using System.Net.Http.Json;
 using System.Text;
 
 namespace CompanyApiTest
@@ -66,6 +67,27 @@ namespace CompanyApiTest
            
             // Then
             Assert.Equal(HttpStatusCode.BadRequest, httpResponseMessage.StatusCode);
+        }
+
+        [Fact]
+        public async Task Should_return_all_companys_when_get_companies_given_nothing()
+        {
+            // Given
+            ClearDataAsync();
+            var companyGiven1 = new CreateCompanyRequest { Name = "BlueSky Digital Media 1" };
+            var companyGiven2 = new CreateCompanyRequest { Name = "BlueSky Digital Media 2" };
+
+
+            // When
+            HttpResponseMessage httpResponseMessage1 = await httpClient.PostAsJsonAsync("/api/companies", companyGiven1);
+            HttpResponseMessage httpResponseMessage2 = await httpClient.PostAsJsonAsync("/api/companies", companyGiven2);
+
+            var companies = await httpClient.GetFromJsonAsync<List<Company>>("api/companies");
+            // Then
+            Assert.Equal(HttpStatusCode.Created, httpResponseMessage1.StatusCode);
+            Assert.Equal(HttpStatusCode.Created, httpResponseMessage2.StatusCode);
+
+            Assert.Equal(2, companies.Count);
         }
 
         private async Task<T?> DeserializeTo<T>(HttpResponseMessage httpResponseMessage)
