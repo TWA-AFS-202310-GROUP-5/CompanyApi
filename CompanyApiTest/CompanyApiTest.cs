@@ -238,6 +238,39 @@ namespace CompanyApiTest
             Assert.Equal(HttpStatusCode.NotFound, httpResponseMessageAddEmp.StatusCode);
 
         }
+        [Fact]
+        public async Task Should_return_204_no_content_when_delete_exist_employee_from_exist_company()
+        {
+            await ClearDataAsync();
+            CreateCompanyRequest companyCreate = new CreateCompanyRequest { Name = "Test" };
+            HttpResponseMessage httpResponseMessageCreate = await httpClient.PostAsJsonAsync(companyUri, companyCreate);
+            Company company = await httpResponseMessageCreate.Content.ReadFromJsonAsync<Company>();
+            CreateEmployeeRequest givenEmployee = new CreateEmployeeRequest { Name = "Wang", Salary = 6000 };
+            HttpResponseMessage httpResponseMessageAddEmp = await httpClient.PostAsJsonAsync($"{companyUri}/{company.Id}", givenEmployee);
+            Employee createdEmployee = await httpResponseMessageAddEmp.Content.ReadFromJsonAsync<Employee>();
+
+            HttpResponseMessage httpResponseMessageDeleteEmp = await httpClient.DeleteAsync($"{companyUri}/{company.Id}?employeeId={createdEmployee.Id}");
+
+            Assert.Equal(HttpStatusCode.NoContent, httpResponseMessageDeleteEmp.StatusCode);
+            
+
+        }
+
+        [Fact]
+        public async Task Should_return_404_NOTFOUND_when_delete_nonexist_employee_from_exist_company()
+        {
+            await ClearDataAsync();
+            CreateCompanyRequest companyCreate = new CreateCompanyRequest { Name = "Test" };
+            HttpResponseMessage httpResponseMessageCreate = await httpClient.PostAsJsonAsync(companyUri, companyCreate);
+            Company company = await httpResponseMessageCreate.Content.ReadFromJsonAsync<Company>();
+            
+            string fakeEmployeeId = "111";
+            HttpResponseMessage httpResponseMessageDeleteEmp = await httpClient.DeleteAsync($"{companyUri}/{company.Id}?employeeId={fakeEmployeeId}");
+
+
+            Assert.Equal(HttpStatusCode.NotFound, httpResponseMessageDeleteEmp.StatusCode);
+
+        }
 
         private async Task<T?> DeserializeTo<T>(HttpResponseMessage httpResponseMessage)
         {

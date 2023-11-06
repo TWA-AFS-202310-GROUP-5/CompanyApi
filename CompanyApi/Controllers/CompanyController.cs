@@ -88,6 +88,24 @@ namespace CompanyApi.Controllers
             return StatusCode(StatusCodes.Status201Created, employeeCreated);
         }
 
+        [HttpDelete("{companyId}")]
+        public ActionResult<List<Company>> DeleteEmployeeById([FromQuery(Name = "employeeId")] string employeeId, string companyId)
+        {
+            Company company = companies.FirstOrDefault(company => company.Id == companyId);
+            if (company == null)
+            {
+                return NotFound();
+            }
+            Employee employee = company.Employees.FirstOrDefault(employee => employee.Id == employeeId);
+            if (employee == null)
+            {
+                return NotFound();
+            }
+            company.Employees.Remove(employee);
+            return StatusCode(StatusCodes.Status204NoContent);
+
+        }
+
         [HttpDelete]
         public void ClearData()
         { 
