@@ -147,7 +147,6 @@ namespace CompanyApiTest
 
         }
 
-
         [Fact]
         public async Task Should_return_not_found_when_update_company_given_do_not_exit_company_id()
         {
@@ -164,6 +163,32 @@ namespace CompanyApiTest
             Assert.Equal(HttpStatusCode.NotFound, getResponseMessage.StatusCode);
 
         }
+
+        [Fact]
+        public async Task Should_return_ok_when_get_page_given_page_and_size()
+        {
+            ClearDataAsync();
+            var uCompanyRequests = new List<CreateCompanyRequest>();
+            for (int i = 0; i < 30; i++)
+            {
+                uCompanyRequests.Add(new CreateCompanyRequest{Name = $"company {i}"});
+            }
+
+            for (int i = 0; i < 10; i++)
+            {
+                 await httpClient.PostAsJsonAsync("/api/companies", uCompanyRequests[i]);
+
+            }
+
+
+            var companies = await httpClient.GetFromJsonAsync<List<Company>>("api/companies/2/3");
+            Assert.Equal(2,companies.Count);
+            Assert.Equal(uCompanyRequests[4].Name, companies[0].Name);
+            Assert.Equal(uCompanyRequests[5].Name, companies[1].Name);
+
+
+        }
+
         private async Task<T?> DeserializeTo<T>(HttpResponseMessage httpResponseMessage)
         {
             string response = await httpResponseMessage.Content.ReadAsStringAsync();

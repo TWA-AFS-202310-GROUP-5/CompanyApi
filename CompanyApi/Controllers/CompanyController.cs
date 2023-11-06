@@ -46,6 +46,14 @@ namespace CompanyApi.Controllers
             return StatusCode(StatusCodes.Status204NoContent);
         }
 
+        [HttpGet("{size}/{page}")]
+        public ActionResult<List<Company>> GetPage(string size, string page)
+        {
+            var pageNumber = int.Parse(page);
+            var pageSize = int.Parse(size);
+            var result = companies.Skip((pageNumber - 1) * pageSize).Take(pageSize);
+            return StatusCode(StatusCodes.Status200OK, result);
+        }
         [HttpDelete]
         public void ClearData()
         { 
