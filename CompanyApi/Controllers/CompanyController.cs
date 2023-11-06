@@ -67,7 +67,7 @@ namespace CompanyApi.Controllers
         [HttpPut("{id}")]
         public ActionResult<Company> Put(string id, CreateCompanyRequest company)
         {
-            Company existedCompany = companies.Where(c => c.Id == id).FirstOrDefault();
+            Company? existedCompany = companies.Where(c => c.Id == id).FirstOrDefault();
 
             if (existedCompany == null)
             {
@@ -77,6 +77,25 @@ namespace CompanyApi.Controllers
             {
                 existedCompany.Name = company.Name;
                 return NoContent();
+            }
+        }
+
+        [HttpPost("{companyId}/employees")]
+        public ActionResult<Employee> AddEmployee(string companyId, EmployeeRequest employee)
+        {
+            Company? company = companies.FirstOrDefault(c => c.Id == companyId);
+            if (company == null)
+            {
+                return NotFound();
+            }
+            else
+            {
+                Employee newEmployee = new Employee();
+                newEmployee.Name = employee.Name;
+                newEmployee.Salary = employee.Salary;
+                company.Employees.Add(newEmployee);
+
+                return Created("", newEmployee);
             }
         }
     }
