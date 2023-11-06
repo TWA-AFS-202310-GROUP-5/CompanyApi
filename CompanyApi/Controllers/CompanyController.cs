@@ -47,23 +47,18 @@ namespace CompanyApi.Controllers
         public ActionResult<List<Company>> Get()
         {
             return Ok(companies);
-        }*/
-        
-
+        }
+        */
         
         [HttpGet]
-        public ActionResult<List<Company>> Get([FromQuery] string? pageSize, [FromQuery] string? pageIndex)
+        public ActionResult<List<Company>> Get([FromQuery] int? pageSize, [FromQuery] int? pageIndex)
         {
-            if (pageSize == null || pageIndex == null)
+            if (!(pageSize.HasValue || pageIndex.HasValue))
             {
                 return Ok(companies);
-            }
-            else
-            {
-                return companies.Skip(int.Parse(pageSize) * (int.Parse(pageIndex) - 1)).Take(int.Parse(pageSize)).ToList();
-            }
+            }      
+            return companies.Skip(pageSize.Value * (pageIndex.Value - 1)).Take(pageSize.Value).ToList();   
         }
-        
 
         [HttpPut("{id}")]
         public ActionResult<Company> Put(string id, CreateCompanyRequest company)
