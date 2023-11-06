@@ -109,7 +109,7 @@ namespace CompanyApiTest
             HttpResponseMessage httpResponseMessage1 = await httpClient.PostAsJsonAsync("api/companies", companyRequest);
             string unknownId = "de678553-jh4787";
             //when
-            HttpResponseMessage httpResponseMessage2 = await httpClient.GetAsync($"/api/companies/{unknownId}");
+            HttpResponseMessage httpResponseMessage2 = await httpClient.GetAsync($"api/companies/{unknownId}");
             //then
             Assert.Equal(HttpStatusCode.NotFound, httpResponseMessage2.StatusCode);
         }
@@ -121,16 +121,18 @@ namespace CompanyApiTest
             await ClearDataAsync();
             int pageSize = 2;
             int pageIndex = 2;
-            _ = httpClient.PostAsJsonAsync("api/companies",
+            _ = await httpClient.PostAsJsonAsync("api/companies",
                 new CreateCompanyRequest { Name = "BlueSky Digital Media1" });
-            _ = httpClient.PostAsJsonAsync("api/companies",
+            _ = await httpClient.PostAsJsonAsync("api/companies",
                 new CreateCompanyRequest { Name = "BlueSky Digital Media2" });
-            _ = httpClient.PostAsJsonAsync("api/companies",
+            _ = await httpClient.PostAsJsonAsync("api/companies",
                 new CreateCompanyRequest { Name = "BlueSky Digital Media3" });
-            _ = httpClient.PostAsJsonAsync("api/companies",
+            _ = await httpClient.PostAsJsonAsync("api/companies",
                 new CreateCompanyRequest { Name = "BlueSky Digital Media4" });
+            _ = await httpClient.PostAsJsonAsync("api/companies",
+                new CreateCompanyRequest { Name = "BlueSky Digital Media5" });
             //when
-            HttpResponseMessage httpResponseMessage = await httpClient.GetAsync($"/api/companies?pageSize={pageSize}&pageIndex={pageIndex}");
+            HttpResponseMessage httpResponseMessage = await httpClient.GetAsync($"api/companies/getRange?pageSize={pageSize}&pageIndex={pageIndex}");
             //then
             List<Company> companies = await httpResponseMessage.Content.ReadFromJsonAsync<List<Company>>();
             Assert.Equal("BlueSky Digital Media3", companies[0].Name);

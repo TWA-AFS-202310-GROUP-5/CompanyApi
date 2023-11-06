@@ -41,5 +41,13 @@ namespace CompanyApi.Controllers
         { 
             companies.Clear();
         }
+
+        [HttpGet]
+        [Route("getRange")]
+        public ActionResult<List<Company>> GetByPageSizeAndPageIndex([FromQuery] int pageSize, [FromQuery] int pageIndex)
+        {
+            List<Company> getCompanies = companies.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
+            return Ok(getCompanies);
+        }
     }
 }
