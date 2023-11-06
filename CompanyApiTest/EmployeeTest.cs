@@ -35,7 +35,18 @@ namespace CompanyApiTest
             Assert.Equal(HttpStatusCode.Created, httpResponseMessage2.StatusCode);
         }
 
-
+        [Fact]
+        public async Task Should_return_400_bad_request_when_create_employee_given_not_exist_company_id()
+        {
+            //given
+            await ClearDataAsync();
+            CreateEmployeeRequest employeeRequest = new CreateEmployeeRequest { Name = "111" };
+            string notExistId = Guid.NewGuid().ToString();
+            //when
+            HttpResponseMessage httpResponseMessage = await httpClient.PostAsJsonAsync($"api/companies/{notExistId}", employeeRequest);
+            //then
+            Assert.Equal(HttpStatusCode.BadRequest, httpResponseMessage.StatusCode);
+        }
 
 
 
