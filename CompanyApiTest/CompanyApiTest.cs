@@ -78,7 +78,7 @@ namespace CompanyApiTest
             List<CreateCompanyRequest> givenCompanyList = new List<CreateCompanyRequest>();
             for (int i = 0; i < companyNum; i++)
             {
-                CreateCompanyRequest companyTemp = new CreateCompanyRequest("name" + i);
+                CreateCompanyRequest companyTemp = new CreateCompanyRequest { Name = "Test" + i };
                 givenCompanyList.Add(companyTemp);
                 HttpResponseMessage httpResponseMessageTemp = await httpClient.PostAsJsonAsync(companyUri, companyTemp);
             }
@@ -97,7 +97,6 @@ namespace CompanyApiTest
             List<Company> resultCompanyList = await httpClient.GetFromJsonAsync<List<Company>>(companyUri);
 
             Assert.Empty(resultCompanyList);
-
 
         }
 
