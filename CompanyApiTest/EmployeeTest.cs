@@ -48,8 +48,10 @@ namespace CompanyApiTest
             Assert.Equal(HttpStatusCode.BadRequest, httpResponseMessage.StatusCode);
         }
 
+
+
         [Fact]
-        public async Task Should_return_400_bad_request_when_create_employee_given_existed_employee()
+        public async Task Should_return_204_no_content_when_delete_specific_under_specific_company()
         {
             //given
             await ClearDataAsync();
@@ -57,13 +59,13 @@ namespace CompanyApiTest
             HttpResponseMessage httpResponseMessage1 = await httpClient.PostAsJsonAsync("/api/companies", companyRequest);
             Company company = await httpResponseMessage1.Content.ReadFromJsonAsync<Company>();
             CreateEmployeeRequest employeeRequest = new CreateEmployeeRequest { Name = "111" };
-            await httpClient.PostAsJsonAsync($"api/companies/{company.Id}", employeeRequest);
+            HttpResponseMessage httpResponseMessage2 = await httpClient.PostAsJsonAsync($"api/companies/{company.Id}", employeeRequest);
+            Employee employee = await httpResponseMessage2.Content.ReadFromJsonAsync<Employee>();
             //when
-            HttpResponseMessage httpResponseMessage = await httpClient.PostAsJsonAsync($"api/companies/{company.Id}", employeeRequest);
+            HttpResponseMessage httpResponseMessage3 = await httpClient.DeleteAsync($"api/companies/{company.Id}/employees/{employee.Id}");
             //then
-            Assert.Equal(HttpStatusCode.BadRequest, httpResponseMessage.StatusCode);
+            Assert.Equal(HttpStatusCode.NoContent, httpResponseMessage3.StatusCode);
         }
-
 
 
 

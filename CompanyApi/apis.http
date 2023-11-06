@@ -70,5 +70,11 @@ POST https://{{hostname}}:{{port}}/api/companies/{companyId}
 ## Response:
 ### Case1:  Employee Created Success, Return Employee created with Status Created( 201 )
 ### Case2:  CompanyId not exists, return 400 Bad request
-### Case3:  Employee existing, reutrn 400 bad request
 ### Case3:  Other Bad Reqeust ( Request Body Not Valid )
+
+## AC7 Delete Employee by Employee ID
+DELETE https://{{hostname}}:{{port}}/api/companies/{companyId}/employees/{employeeId}
+
+## Response:
+### Case1: Employee deleted success, return 204 no Content
+### Case2: EmployeeId not found
