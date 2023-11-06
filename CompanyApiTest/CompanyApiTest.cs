@@ -140,6 +140,37 @@ namespace CompanyApiTest
 
         }
 
+        [Fact]
+        public async Task Should_return_204_when_update_successfully_given_id_and_updatedCompany()
+        {
+            //given
+            await ClearDataAsync();
+            CreateCompanyRequest companyGiven = new CreateCompanyRequest("BlueSky Digital Media");
+            CreateCompanyRequest newCompany = new CreateCompanyRequest("BlueSky");
+            HttpResponseMessage httpResponseMessage = await httpClient.PostAsJsonAsync("api/companies", companyGiven);
+            var company = await httpResponseMessage.Content.ReadFromJsonAsync<Company>();
+
+            //when
+            HttpResponseMessage httpResponseMessage2 = await httpClient.PutAsJsonAsync($"api/companies/{company.Id}", newCompany);
+
+            //then
+            Assert.Equal(HttpStatusCode.NoContent, httpResponseMessage2.StatusCode);
+
+        }
+
+        [Fact]
+        public async Task Should_return_404_when_update_given_not_exist_id_and_updatedCompany()
+        {
+            await ClearDataAsync();
+            CreateCompanyRequest companyGiven = new CreateCompanyRequest("BlueSky Digital Media");
+
+            HttpResponseMessage httpResponseMessage = await httpClient.PutAsJsonAsync($"api/companies/0000", companyGiven);
+
+            Assert.Equal(HttpStatusCode.NotFound, httpResponseMessage.StatusCode);
+
+        }
+
+
         private async Task<T?> DeserializeTo<T>(HttpResponseMessage httpResponseMessage)
         {
             string response = await httpResponseMessage.Content.ReadAsStringAsync();

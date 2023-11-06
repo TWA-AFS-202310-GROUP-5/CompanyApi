@@ -56,7 +56,28 @@ namespace CompanyApi.Controllers
             }
         }
 
-        
-        
+        /*
+        [HttpGet]
+        public ActionResult<List<Company>> Get()
+        {
+            return Ok(companies);
+        }
+        */
+
+        [HttpPut("{id}")]
+        public ActionResult<Company> Put(string id, CreateCompanyRequest company)
+        {
+            Company existedCompany = companies.Where(c => c.Id == id).FirstOrDefault();
+
+            if (existedCompany == null)
+            {
+                return NotFound();
+            }
+            else
+            {
+                existedCompany.Name = company.Name;
+                return NoContent();
+            }
+        }
     }
 }
