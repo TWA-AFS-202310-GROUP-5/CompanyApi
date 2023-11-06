@@ -42,13 +42,13 @@ namespace CompanyApi.Controllers
         {
             if (pageSize < 0 || pageIndex < 1)
             {
-                return new List<Company>();
+                return StatusCode(StatusCodes.Status200OK, new List<Company>());
             }
             int startBound = (pageIndex - 1) * pageSize;
             int endBound = Math.Min(startBound + pageSize, companies.Count()) - startBound;
             if (startBound >= companies.Count())
             {
-                return new List<Company>();
+                return StatusCode(StatusCodes.Status200OK, new List<Company>());
             }
             try
             {            
@@ -57,9 +57,21 @@ namespace CompanyApi.Controllers
             }
             catch (Exception ex)
             {
-                return new List<Company>();
+                return StatusCode(StatusCodes.Status200OK, new List<Company>());
             }
 
+        }
+
+        [HttpPut("{id}")]
+        public ActionResult Update([FromBody]UpdateCompanyRequest updateCompany, string id)
+        {
+            Company company = companies.FirstOrDefault(c => c.Id == id);
+            if (company == null)
+            {
+                return NotFound();
+            }
+            companies.FirstOrDefault(c => c.Id == id).Name = updateCompany.Name;
+            return StatusCode(StatusCodes.Status204NoContent);
         }
 
         [HttpDelete]

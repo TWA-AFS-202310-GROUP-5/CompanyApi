@@ -172,6 +172,45 @@ namespace CompanyApiTest
 
         }
 
+        [Fact]
+        public async Task Should_return_404_NOTFOUND_when_update_company_given_no_exist_Id()
+        {
+            await ClearDataAsync();
+            List<CreateCompanyRequest> givenCompanyList = new List<CreateCompanyRequest>();
+            CreateCompanyRequest companyCreate = new CreateCompanyRequest { Name = "Test" };
+            givenCompanyList.Add(companyCreate);
+            HttpResponseMessage httpResponseMessage1 = await httpClient.PostAsJsonAsync(companyUri, companyCreate);
+
+            string fakeId = "fake id 111";
+            UpdateCompanyRequest updateCompany = new UpdateCompanyRequest { Name = "Test-Updated" };
+            HttpResponseMessage httpResponseMessage2 = await httpClient.PutAsJsonAsync(companyUri + "/" + fakeId, updateCompany);
+
+            Assert.Equal(HttpStatusCode.NotFound, httpResponseMessage2.StatusCode);
+
+        }
+
+        [Fact]
+        public async Task Should_return_204_NO_Content_when_update_company_given_exist_Id()
+        {
+            await ClearDataAsync();
+            List<CreateCompanyRequest> givenCompanyList = new List<CreateCompanyRequest>();
+            CreateCompanyRequest companyCreate = new CreateCompanyRequest { Name = "Test" };
+            givenCompanyList.Add(companyCreate);
+            HttpResponseMessage httpResponseMessageCreate = await httpClient.PostAsJsonAsync(companyUri, companyCreate);
+            Company correctCompany = await httpResponseMessageCreate.Content.ReadFromJsonAsync<Company>();
+            correctCompany.Name = "Test-Updated";
+
+            UpdateCompanyRequest updateCompany = new UpdateCompanyRequest { Name = "Test-Updated" };
+            HttpResponseMessage httpResponseMessagePut = await httpClient.PutAsJsonAsync(companyUri + "/" + correctCompany.Id, updateCompany);
+            HttpResponseMessage httpResponseMessageGet = await httpClient.GetAsync(companyUri + "/" + correctCompany.Id);
+            Company resultCompany = await httpResponseMessageGet.Content.ReadFromJsonAsync<Company>();
+
+            Assert.Equal(HttpStatusCode.NoContent, httpResponseMessagePut.StatusCode);
+            Assert.Equal(correctCompany.Name, resultCompany.Name);
+            Assert.Equal(correctCompany.Id, resultCompany.Id);
+
+        }
+
         private async Task<T?> DeserializeTo<T>(HttpResponseMessage httpResponseMessage)
         {
             string response = await httpResponseMessage.Content.ReadAsStringAsync();
