@@ -75,17 +75,28 @@ namespace CompanyApiTest
         public async Task Should_return_all_company_when_getAll_given_exist_sevral_company(int companyNum)
         {
             await ClearDataAsync();
-            List<Company> givenCompanyList = new List<Company>();
-            for (int i=0; i< companyNum; i++)
+            List<CreateCompanyRequest> givenCompanyList = new List<CreateCompanyRequest>();
+            for (int i = 0; i < companyNum; i++)
             {
-                Company companyTemp = new Company("Test Company" + i);
+                CreateCompanyRequest companyTemp = new CreateCompanyRequest("name" + i);
                 givenCompanyList.Add(companyTemp);
                 HttpResponseMessage httpResponseMessageTemp = await httpClient.PostAsJsonAsync(companyUri, companyTemp);
             }
 
             List<Company> resultCompanyList = await httpClient.GetFromJsonAsync<List<Company>>(companyUri);
 
-            Assert.Equal(givenCompanyList, resultCompanyList);
+            Assert.Equal(givenCompanyList.Select(x => x.Name), resultCompanyList.Select(y => y.Name));
+
+
+        }
+        [Fact]
+        public async Task Should_return_empty_list_when_getAll_given_no_exist_company()
+        {
+            await ClearDataAsync();
+
+            List<Company> resultCompanyList = await httpClient.GetFromJsonAsync<List<Company>>(companyUri);
+
+            Assert.Empty(resultCompanyList);
 
 
         }
