@@ -107,7 +107,7 @@ namespace CompanyApiTest
             await ClearDataAsync();
             CreateCompanyRequest companyRequest = new CreateCompanyRequest { Name = "BlueSky Digital Media" };
             HttpResponseMessage httpResponseMessage1 = await httpClient.PostAsJsonAsync("api/companies", companyRequest);
-            string unknownId = "de678553-jh4787";
+            string unknownId = Guid.NewGuid().ToString();
             //when
             HttpResponseMessage httpResponseMessage2 = await httpClient.GetAsync($"api/companies/{unknownId}");
             //then
@@ -145,7 +145,7 @@ namespace CompanyApiTest
             // given
             await ClearDataAsync();
             HttpResponseMessage httpResponseMessage1 = await httpClient.PostAsJsonAsync("api/companies",
-                new CreateCompanyRequest { Name = "BlueSky Digital Media1" });
+                new CreateCompanyRequest { Name = "BlueSky Digital Media" });
             Company company = await httpResponseMessage1.Content.ReadFromJsonAsync<Company>();
             CreateCompanyRequest request = new CreateCompanyRequest { Name = "Google" };
             // when
@@ -154,6 +154,22 @@ namespace CompanyApiTest
             Assert.Equal(HttpStatusCode.NoContent, httpResponseMessage2.StatusCode);
         }
 
+
+        [Fact]
+        public async Task Should_get_404_not_found_when_update_given_unknown_id()
+        {
+            //given
+            await ClearDataAsync();
+            HttpResponseMessage httpResponseMessage1 = await httpClient.PostAsJsonAsync("api/companies",
+                new CreateCompanyRequest { Name = "BlueSky Digital Media" });
+            Company company = await httpResponseMessage1.Content.ReadFromJsonAsync<Company>();
+            CreateCompanyRequest request = new CreateCompanyRequest { Name = "Google" };
+            string unknownId = Guid.NewGuid().ToString();
+            //when
+            HttpResponseMessage httpResponseMessage2 = await httpClient.PutAsJsonAsync($"/api/companies/{unknownId}", request);
+            //then
+            Assert.Equal(HttpStatusCode.NotFound, httpResponseMessage2.StatusCode);
+        }
         private async Task<T?> DeserializeTo<T>(HttpResponseMessage httpResponseMessage)
         {
             string response = await httpResponseMessage.Content.ReadAsStringAsync();
