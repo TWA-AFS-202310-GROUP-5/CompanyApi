@@ -7,6 +7,7 @@ namespace CompanyApi.Controllers
     public class CompanyController : ControllerBase
     {
         private static List<Company> companies = new List<Company>();
+        private static Dictionary<string, Employee> employees = new Dictionary<string, Employee>();
 
         [HttpPost]
         public ActionResult<Company> Create(CreateCompanyRequest request)
@@ -67,5 +68,7 @@ namespace CompanyApi.Controllers
         {
             return companies.Find(company => company.Id.Equals(id));
         }
+
+
     }
 }
