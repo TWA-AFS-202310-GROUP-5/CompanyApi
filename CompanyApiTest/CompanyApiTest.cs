@@ -2,6 +2,7 @@ using CompanyApi;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Newtonsoft.Json;
 using System.Net;
+using System.Net.Http.Json;
 using System.Text;
 
 namespace CompanyApiTest
@@ -17,21 +18,18 @@ namespace CompanyApiTest
         }
 
         [Fact]
-        public async Task Should_return_created_company_with_status_201_when_create_cpmoany_given_a_company_name()
+        public async Task Should_return_created_company_with_status_201_when_create_company_given_a_company_name()
         {
             // Given
             await ClearDataAsync();
             Company companyGiven = new Company("BlueSky Digital Media");
-            
+
             // When
-            HttpResponseMessage httpResponseMessage = await httpClient.PostAsync(
-                "/api/companies", 
-                SerializeObjectToContent(companyGiven)
-            );
-           
+            HttpResponseMessage httpResponseMessage = await httpClient.PostAsJsonAsync("/api/companies", companyGiven);
+             
             // Then
             Assert.Equal(HttpStatusCode.Created, httpResponseMessage.StatusCode);
-            Company? companyCreated = await DeserializeTo<Company>(httpResponseMessage);
+            Company? companyCreated = await httpResponseMessage.Content.ReadFromJsonAsync<Company>();
             Assert.NotNull(companyCreated);
             Assert.NotNull(companyCreated.Id);
             Assert.Equal(companyGiven.Name, companyCreated.Name);
@@ -83,6 +81,24 @@ namespace CompanyApiTest
         private async Task ClearDataAsync()
         {
             await httpClient.DeleteAsync("/api/companies");
+        }
+
+        [Fact]
+        public async Task Should_return_all_companies_when_GetAll_given_2_companies_created()
+        {
+            //given
+            await httpClient.DeleteAsync("/api/companies");
+            Company companyGiven1 = new Company("BlueSky Digital Media");
+            await httpClient.PostAsJsonAsync("api/companies", companyGiven1);
+            Company companyGiven2 = new Company("Google");
+            await httpClient.PostAsJsonAsync("api/companies", companyGiven2);
+            List<Company> companies = new List<Company> { companyGiven1, companyGiven2 };
+
+            //when
+            HttpResponseMessage httpResponseMessage = await httpClient.GetAsync("api/companies");
+
+            List<Company>? companiesGet = await httpResponseMessage.Content.ReadFromJsonAsync<List<Company>>();
+            Assert.Equal(companies.Select(company => company.Name).ToList(), companiesGet.Select(company => company.Name).ToList());
         }
     }
 }
