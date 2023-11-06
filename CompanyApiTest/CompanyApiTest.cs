@@ -136,6 +136,42 @@ namespace CompanyApiTest
 
         }
 
+        [Theory]
+        [InlineData(6, 2, 4)]
+        [InlineData(6, 3, 3)]
+        public async Task Should_return_empty_list_when_getCompanyByRange_given_invalid_start_index(int companyNum, int pageSize, int pageIndex)
+        {
+            await ClearDataAsync();
+
+            for (int i = 0; i < companyNum; i++)
+            {
+                CreateCompanyRequest companyTemp = new CreateCompanyRequest { Name = "Test" + i };
+                HttpResponseMessage httpResponseMessageTemp = await httpClient.PostAsJsonAsync(companyUri, companyTemp);
+            }
+            List<Company> resultCompanyList = await httpClient.GetFromJsonAsync<List<Company>>($"{companyUri}/range?pageSize={pageSize}&pageIndex={pageIndex}");
+
+            Assert.Empty(resultCompanyList);
+
+        }
+
+        [Theory]
+        [InlineData(5, 2, 3)]
+        [InlineData(6, 1, 3)]
+        public async Task Should_return_correct_list_when_getCompanyByRange_given_valid_index(int companyNum, int pageSize, int pageIndex)
+        {
+            await ClearDataAsync();
+
+            for (int i = 0; i < companyNum; i++)
+            {
+                CreateCompanyRequest companyTemp = new CreateCompanyRequest { Name = "Test" + i };
+                HttpResponseMessage httpResponseMessageTemp = await httpClient.PostAsJsonAsync(companyUri, companyTemp);
+            }
+            List<Company> resultCompanyList = await httpClient.GetFromJsonAsync<List<Company>>($"{companyUri}/range?pageSize={pageSize}&pageIndex={pageIndex}");
+
+            Assert.Equal(1, resultCompanyList.Count());
+
+        }
+
         private async Task<T?> DeserializeTo<T>(HttpResponseMessage httpResponseMessage)
         {
             string response = await httpResponseMessage.Content.ReadAsStringAsync();

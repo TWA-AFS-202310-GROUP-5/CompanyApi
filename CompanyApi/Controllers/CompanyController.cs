@@ -37,6 +37,31 @@ namespace CompanyApi.Controllers
             return StatusCode(StatusCodes.Status200OK, company);
         }
 
+        [HttpGet("range")]
+        public ActionResult<List<Company>> GetCompanyByRange([FromQuery(Name = "pageSize")]int pageSize, [FromQuery(Name = "pageIndex")] int pageIndex)
+        {
+            if (pageSize < 0 || pageIndex < 1)
+            {
+                return new List<Company>();
+            }
+            int startBound = (pageIndex - 1) * pageSize;
+            int endBound = Math.Min(startBound + pageSize, companies.Count()) - startBound;
+            if (startBound >= companies.Count())
+            {
+                return new List<Company>();
+            }
+            try
+            {            
+                List<Company> companyList = companies.GetRange(startBound, endBound);
+                return StatusCode(StatusCodes.Status200OK, companyList);
+            }
+            catch (Exception ex)
+            {
+                return new List<Company>();
+            }
+
+        }
+
         [HttpDelete]
         public void ClearData()
         { 
