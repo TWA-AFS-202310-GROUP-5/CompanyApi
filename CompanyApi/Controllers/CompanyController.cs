@@ -53,7 +53,12 @@ namespace CompanyApi.Controllers
         [HttpPut("{id}")]
         public ActionResult UpdateById(string Id, CreateCompanyRequest request)
         {
-            companies.Find(company => company.Id == Id).Name = request.Name;
+            Company company = companies.Find(company => company.Id == Id);
+            if (company == null)
+            {
+                return NotFound();
+            }
+            company.Name = request.Name;
             return NoContent();
         }
     }
