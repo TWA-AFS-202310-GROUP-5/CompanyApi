@@ -49,5 +49,12 @@ namespace CompanyApi.Controllers
             List<Company> getCompanies = companies.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();
             return Ok(getCompanies);
         }
+
+        [HttpPut("{id}")]
+        public ActionResult UpdateById(string Id, CreateCompanyRequest request)
+        {
+            companies.Find(company => company.Id == Id).Name = request.Name;
+            return NoContent();
+        }
     }
 }
