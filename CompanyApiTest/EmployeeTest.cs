@@ -67,6 +67,20 @@ namespace CompanyApiTest
             Assert.Equal(HttpStatusCode.NoContent, httpResponseMessage3.StatusCode);
         }
 
+        [Fact]
+        public async Task Should_return_404_not_found_when_delete_specific_employee_under_specific_company_given_not_exist_employeeId()
+        {
+            //given
+            await ClearDataAsync();
+            CreateCompanyRequest companyRequest = new CreateCompanyRequest { Name = "Google" };
+            HttpResponseMessage httpResponseMessage1 = await httpClient.PostAsJsonAsync("/api/companies", companyRequest);
+            Company company = await httpResponseMessage1.Content.ReadFromJsonAsync<Company>();
+            string notExistedEmployeeId = Guid.NewGuid().ToString();
+            //when
+            HttpResponseMessage httpResponseMessage3 = await httpClient.DeleteAsync($"api/companies/{company.Id}/employees/{notExistedEmployeeId}");
+            //then
+            Assert.Equal(HttpStatusCode.NotFound, httpResponseMessage3.StatusCode);
+        }
 
 
 

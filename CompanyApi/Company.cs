@@ -19,5 +19,17 @@
             employeeMap.Add(emp.Id, emp);
             return emp;
         }
+
+        public string? DeleteEmployee(string employeeId)
+        {
+            if (employeeMap.ContainsKey(employeeId))
+            {
+                Employee emp = employeeMap[employeeId];
+                employeeMap.Remove(employeeId);
+                return emp.Id;
+            }
+            return null;
+            
+        }
     }
 }
