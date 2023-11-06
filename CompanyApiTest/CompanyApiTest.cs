@@ -92,7 +92,7 @@ namespace CompanyApiTest
 
 
         [Fact]
-        public async Task Should_return_a_company_when_get_company_given_company_name()
+        public async Task Should_return_a_company_when_get_company_given_company_id()
         {
             // Given
             ClearDataAsync();
@@ -114,17 +114,36 @@ namespace CompanyApiTest
         [Fact]
         public async Task Should_return_404__when_get_company_given_do_not_exit_company_id()
         {
-            // Given
             ClearDataAsync();
+            // Given
 
             // When
-
             HttpResponseMessage getResponseMessage = await httpClient.GetAsync("/api/companies/BlueSky Digital Media 1");
 
             var company = await DeserializeTo<Company>(getResponseMessage);
+            
             // Then
-
             Assert.Equal(HttpStatusCode.NotFound, getResponseMessage.StatusCode);
+
+        }
+
+        [Fact]
+        public async Task Should_return_success_when_update_company_given_company_id()
+        {
+            // Given
+            ClearDataAsync();
+            var companyGiven1 = new CreateCompanyRequest { Name = "BlueSky Digital Media 1" };
+
+            // When
+            HttpResponseMessage createdResponseMessage = await httpClient.PostAsJsonAsync("/api/companies", companyGiven1);
+            var createdCompany = await DeserializeTo<Company>(createdResponseMessage);
+
+            var updateCompanyRequest = new UpdateCompanyRequest { Name = "New name" };
+            var updateString = SerializeObjectToContent(updateCompanyRequest);
+            HttpResponseMessage getResponseMessage = await httpClient.PutAsync($"/api/companies/{createdCompany.Id}",updateString);
+
+            // Then
+            Assert.Equal(HttpStatusCode.NoContent, getResponseMessage.StatusCode);
 
         }
 

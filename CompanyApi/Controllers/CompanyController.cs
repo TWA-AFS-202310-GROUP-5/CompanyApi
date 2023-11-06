@@ -25,14 +25,27 @@ namespace CompanyApi.Controllers
         {
             var company = companies.FirstOrDefault(company => company.Id == id);
 
-
             return company == null ? StatusCode(StatusCodes.Status404NotFound) : StatusCode(StatusCodes.Status200OK, company);
         }
+
         [HttpGet]
         public ActionResult<List<Company>> GetAll()
         {
             return StatusCode(StatusCodes.Status200OK, companies);
         }
+
+        [HttpPut("{id}")]
+        public ActionResult Put(UpdateCompanyRequest company, string id)
+        {
+            var result = companies.FirstOrDefault(company => company.Id == id);
+            if (result == null)
+            {
+                return StatusCode(StatusCodes.Status404NotFound);
+            }
+            result.Name = company.Name;
+            return StatusCode(StatusCodes.Status204NoContent);
+        }
+
         [HttpDelete]
         public void ClearData()
         { 
