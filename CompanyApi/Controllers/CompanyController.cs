@@ -27,21 +27,7 @@ namespace CompanyApi.Controllers
             companies.Clear();
         }
 
-        [HttpGet]
-        public ActionResult<List<Company>> Get([FromQuery] string pageSize, [FromQuery] string pageIndex)
-        {
-            int pageSizeNum = int.Parse(pageSize);
-            int pageIndexNum = int.Parse(pageIndex);
-            if (companies.Count() < int.Parse(pageSize) * int.Parse(pageIndex))
-            {
-                return NotFound();
-            }
-            else
-            {
-                return StatusCode(StatusCodes.Status200OK, companies.Skip(pageSizeNum * (pageIndexNum - 1)).Take(pageSizeNum).ToList());
-            }
-        }
-
+        
         [HttpGet("{id}")]
         public ActionResult<Company> Get(string id)
         {
@@ -61,8 +47,23 @@ namespace CompanyApi.Controllers
         public ActionResult<List<Company>> Get()
         {
             return Ok(companies);
+        }*/
+        
+
+        
+        [HttpGet]
+        public ActionResult<List<Company>> Get([FromQuery] string? pageSize, [FromQuery] string? pageIndex)
+        {
+            if (pageSize == null || pageIndex == null)
+            {
+                return Ok(companies);
+            }
+            else
+            {
+                return companies.Skip(int.Parse(pageSize) * (int.Parse(pageIndex) - 1)).Take(int.Parse(pageSize)).ToList();
+            }
         }
-        */
+        
 
         [HttpPut("{id}")]
         public ActionResult<Company> Put(string id, CreateCompanyRequest company)

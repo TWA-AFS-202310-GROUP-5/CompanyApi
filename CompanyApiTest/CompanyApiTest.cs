@@ -87,7 +87,7 @@ namespace CompanyApiTest
         public async Task Should_return_request_company_when_Get_given_company_Id()
         {
             //given
-            await httpClient.DeleteAsync("/api/companies");
+            await ClearDataAsync();
             Company companyGiven1 = new Company("BlueSky Digital Media");
             HttpResponseMessage httpResponseMessage1  =  await httpClient.PostAsJsonAsync("api/companies", companyGiven1);
             Company companyGiven2 = new Company("Google");
@@ -108,6 +108,7 @@ namespace CompanyApiTest
         public async Task Should_return_404_when_Get_given_company_Id_not_existed()
         {
             //given
+            await ClearDataAsync();
             string id1 = "12345";
 
             //when
