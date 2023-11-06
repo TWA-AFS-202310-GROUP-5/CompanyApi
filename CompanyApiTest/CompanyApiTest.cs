@@ -147,6 +147,23 @@ namespace CompanyApiTest
 
         }
 
+
+        [Fact]
+        public async Task Should_return_not_found_when_update_company_given_do_not_exit_company_id()
+        {
+            // Given
+            ClearDataAsync();
+
+            // When
+
+            var updateCompanyRequest = new UpdateCompanyRequest { Name = "New name" };
+            var updateString = SerializeObjectToContent(updateCompanyRequest);
+            HttpResponseMessage getResponseMessage = await httpClient.PutAsync("/api/companies/NotExitId", updateString);
+
+            // Then
+            Assert.Equal(HttpStatusCode.NotFound, getResponseMessage.StatusCode);
+
+        }
         private async Task<T?> DeserializeTo<T>(HttpResponseMessage httpResponseMessage)
         {
             string response = await httpResponseMessage.Content.ReadAsStringAsync();
