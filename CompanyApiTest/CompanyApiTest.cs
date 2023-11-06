@@ -138,8 +138,21 @@ namespace CompanyApiTest
             Assert.Equal("BlueSky Digital Media3", companies[0].Name);
             Assert.Equal("BlueSky Digital Media4", companies[1].Name);
         }
-        
 
+        [Fact]
+        public async Task Should_get_204_no_content_when_update_given_existed_companyID()
+        {
+            // given
+            await ClearDataAsync();
+            HttpResponseMessage httpResponseMessage1 = await httpClient.PostAsJsonAsync("api/companies",
+                new CreateCompanyRequest { Name = "BlueSky Digital Media1" });
+            Company company = await httpResponseMessage1.Content.ReadFromJsonAsync<Company>();
+            CreateCompanyRequest request = new CreateCompanyRequest { Name = "Google" };
+            // when
+            HttpResponseMessage httpResponseMessage2 = await httpClient.PutAsJsonAsync($"/api/companies/{company.Id}", request);
+            // then
+            Assert.Equal(HttpStatusCode.NoContent, httpResponseMessage2.StatusCode);
+        }
 
         private async Task<T?> DeserializeTo<T>(HttpResponseMessage httpResponseMessage)
         {
