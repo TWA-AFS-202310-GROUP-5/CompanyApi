@@ -74,6 +74,20 @@ namespace CompanyApi.Controllers
             return StatusCode(StatusCodes.Status204NoContent);
         }
 
+        [HttpPost("{companyId}")]
+        public ActionResult<Company> AddEmployee([FromBody]CreateEmployeeRequest request, string companyId)
+        {
+            Company company = companies.FirstOrDefault(company => company.Id == companyId);
+            if (company == null)
+            {
+                return NotFound();
+            }
+            Employee employeeCreated = new Employee(request.Name, request.Salary);
+            company.Employees.Add(employeeCreated);
+            
+            return StatusCode(StatusCodes.Status201Created, employeeCreated);
+        }
+
         [HttpDelete]
         public void ClearData()
         { 

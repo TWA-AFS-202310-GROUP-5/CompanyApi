@@ -1,4 +1,5 @@
 using CompanyApi;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Newtonsoft.Json;
@@ -176,9 +177,7 @@ namespace CompanyApiTest
         public async Task Should_return_404_NOTFOUND_when_update_company_given_no_exist_Id()
         {
             await ClearDataAsync();
-            List<CreateCompanyRequest> givenCompanyList = new List<CreateCompanyRequest>();
             CreateCompanyRequest companyCreate = new CreateCompanyRequest { Name = "Test" };
-            givenCompanyList.Add(companyCreate);
             HttpResponseMessage httpResponseMessage1 = await httpClient.PostAsJsonAsync(companyUri, companyCreate);
 
             string fakeId = "fake id 111";
@@ -193,9 +192,7 @@ namespace CompanyApiTest
         public async Task Should_return_204_NO_Content_when_update_company_given_exist_Id()
         {
             await ClearDataAsync();
-            List<CreateCompanyRequest> givenCompanyList = new List<CreateCompanyRequest>();
             CreateCompanyRequest companyCreate = new CreateCompanyRequest { Name = "Test" };
-            givenCompanyList.Add(companyCreate);
             HttpResponseMessage httpResponseMessageCreate = await httpClient.PostAsJsonAsync(companyUri, companyCreate);
             Company correctCompany = await httpResponseMessageCreate.Content.ReadFromJsonAsync<Company>();
             correctCompany.Name = "Test-Updated";
@@ -208,6 +205,37 @@ namespace CompanyApiTest
             Assert.Equal(HttpStatusCode.NoContent, httpResponseMessagePut.StatusCode);
             Assert.Equal(correctCompany.Name, resultCompany.Name);
             Assert.Equal(correctCompany.Id, resultCompany.Id);
+
+        }
+        [Fact]
+        public async Task Should_return_created_employee_when_add_employee_to_exist_company()
+        {
+            await ClearDataAsync();
+            CreateCompanyRequest companyCreate = new CreateCompanyRequest { Name = "Test" };
+            HttpResponseMessage httpResponseMessageCreate = await httpClient.PostAsJsonAsync(companyUri, companyCreate);
+            Company company = await httpResponseMessageCreate.Content.ReadFromJsonAsync<Company>();
+            CreateEmployeeRequest givenEmployee = new CreateEmployeeRequest {  Name = "Wang", Salary = 6000 };
+            
+            HttpResponseMessage httpResponseMessageAddEmp = await httpClient.PostAsJsonAsync($"{companyUri}/{company.Id}", givenEmployee);
+            Employee createdEmployee = await httpResponseMessageAddEmp.Content.ReadFromJsonAsync<Employee>();
+            
+            Assert.NotNull(createdEmployee);
+            Assert.NotNull(createdEmployee.Id);
+            Assert.Equal(givenEmployee.Name, createdEmployee.Name);
+
+        }
+
+        [Fact]
+        public async Task Should_return_404_NOTFOUND_when_add_employee_to_nonexist_company()
+        {
+            await ClearDataAsync();
+            CreateEmployeeRequest givenEmployee = new CreateEmployeeRequest { Name = "Wang", Salary = 6000 };
+            string fakeCompanyId = "111";
+            
+            HttpResponseMessage httpResponseMessageAddEmp = await httpClient.PostAsJsonAsync($"{companyUri}/{fakeCompanyId}", givenEmployee);
+
+
+            Assert.Equal(HttpStatusCode.NotFound, httpResponseMessageAddEmp.StatusCode);
 
         }
 
