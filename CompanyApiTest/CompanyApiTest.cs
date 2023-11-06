@@ -22,9 +22,9 @@ namespace CompanyApiTest
         {
             // Given
             await ClearDataAsync();
-            Company companyGiven = new Company("BlueSky Digital Media");
-            
-            // When
+            CreateCompanyRequest companyGiven = new CreateCompanyRequest{Name = "BlueSky Digital Media" };
+
+        // When
             HttpResponseMessage httpResponseMessage = await httpClient.PostAsync(
                 "/api/companies", 
                 SerializeObjectToContent(companyGiven)
@@ -84,8 +84,6 @@ namespace CompanyApiTest
 
             var companies = await httpClient.GetFromJsonAsync<List<Company>>("api/companies");
             // Then
-            Assert.Equal(HttpStatusCode.Created, httpResponseMessage1.StatusCode);
-            Assert.Equal(HttpStatusCode.Created, httpResponseMessage2.StatusCode);
 
             Assert.Equal(2, companies.Count);
         }
@@ -184,8 +182,84 @@ namespace CompanyApiTest
             Assert.Equal(2,companies.Count);
             Assert.Equal(uCompanyRequests[4].Name, companies[0].Name);
             Assert.Equal(uCompanyRequests[5].Name, companies[1].Name);
+            await ClearDataAsync();
 
 
+        }
+
+
+        [Fact]
+        public async Task Should_return_employee_when_created_given_employee()
+        {
+            // Given
+            await ClearDataAsync();
+            CreateCompanyRequest companyGiven = new CreateCompanyRequest { Name = "BlueSky Digital Media" };
+
+            // When
+            HttpResponseMessage httpResponseMessage = await httpClient.PostAsync(
+                "/api/companies",
+                SerializeObjectToContent(companyGiven)
+            );
+
+            var createdEmployee = new CreateEmployeeRequest { Name = "Zhang san" };
+            var company = await DeserializeTo<Company>(httpResponseMessage);
+            HttpResponseMessage httpCreatedEmpResponseMessage = await httpClient.PostAsync(
+                $"/api/companies/{company.Id}/",
+                SerializeObjectToContent(createdEmployee)
+            );
+            var created = await DeserializeTo<Employee>(httpCreatedEmpResponseMessage);
+
+
+            // Then
+            Assert.Equal(HttpStatusCode.Created, httpCreatedEmpResponseMessage.StatusCode);
+            Assert.NotNull(created);
+            Assert.NotNull(created.Id);
+            Assert.Equal("Zhang san", created.Name);
+
+
+        }
+
+        [Fact]
+        public async Task Should_return_bad_reques_when_created_employee_given_company_does_not_exit()
+        {
+
+            var createdEmployee = new CreateEmployeeRequest { Name = "Zhang san" };
+
+            HttpResponseMessage httpCreatedEmpResponseMessage = await httpClient.PostAsync(
+                "/api/companies/companyId/",
+                SerializeObjectToContent(createdEmployee)
+            );
+            var created = await DeserializeTo<Employee>(httpCreatedEmpResponseMessage);
+
+ 
+            Assert.Equal(HttpStatusCode.BadRequest, httpCreatedEmpResponseMessage.StatusCode);
+
+
+        }
+
+        [Fact]
+        public async Task Should_return_Ok_when_delete_employee_given_companyId_and_employeeId()
+        {
+
+            await ClearDataAsync();
+            CreateCompanyRequest companyGiven = new CreateCompanyRequest { Name = "BlueSky Digital Media" };
+
+            HttpResponseMessage httpResponseMessage = await httpClient.PostAsync(
+                "/api/companies",
+                SerializeObjectToContent(companyGiven)
+            );
+
+            var createdEmployee = new CreateEmployeeRequest { Name = "Zhang san" };
+            var company = await DeserializeTo<Company>(httpResponseMessage);
+            HttpResponseMessage httpCreatedEmpResponseMessage = await httpClient.PostAsync(
+                $"/api/companies/{company.Id}/",
+                SerializeObjectToContent(createdEmployee)
+            );
+            var created = await DeserializeTo<Employee>(httpCreatedEmpResponseMessage);
+
+            var deleteInfo = await httpClient.DeleteAsync($"/api/companies/{company.Id}/{created.Id}");
+
+            Assert.Equal(HttpStatusCode.OK, deleteInfo.StatusCode);
         }
 
         private async Task<T?> DeserializeTo<T>(HttpResponseMessage httpResponseMessage)

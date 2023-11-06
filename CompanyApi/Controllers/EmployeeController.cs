@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿/*using Microsoft.AspNetCore.Mvc;
 
 namespace CompanyApi.Controllers
 {
@@ -18,6 +18,19 @@ namespace CompanyApi.Controllers
             employees.Add(companyCreated);
             return StatusCode(StatusCodes.Status201Created, companyCreated);
         }
+
+        [HttpDelete("{companyId/employeeId}")]
+        public ActionResult<Company> Delete(string employeeId)
+        {
+            if (employees.Exists(employee => employee.Id.Equals(employeeId)))
+            {
+                return BadRequest();
+            }
+
+            employees.RemoveAll(employee => employee.Id == employeeId);
+            return StatusCode(StatusCodes.Status201Created);
+        }
+
         [HttpDelete]
         public void ClearData()
         {
@@ -25,3 +38,4 @@ namespace CompanyApi.Controllers
         }
     }
 }
+*/

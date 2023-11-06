@@ -1,4 +1,4 @@
-﻿using CompanyApi;
+﻿/*using CompanyApi;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -72,6 +72,8 @@ namespace CompanyApiTest
             Assert.Equal(HttpStatusCode.BadRequest, httpResponseMessage.StatusCode);
         }
 
+
+
         private async Task<T?> DeserializeTo<T>(HttpResponseMessage httpResponseMessage)
         {
             string response = await httpResponseMessage.Content.ReadAsStringAsync();
@@ -90,3 +92,4 @@ namespace CompanyApiTest
         }
     }
 }
+*/

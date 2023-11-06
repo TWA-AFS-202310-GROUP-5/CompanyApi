@@ -6,24 +6,28 @@ namespace CompanyApi.Controllers
     [ApiController]
     public class CompanyController : ControllerBase
     {
-        private static List<Company> companies = new List<Company>();
+        private static List<Company> Companies = new List<Company>();
+
+
+
+
 
         [HttpPost]
         public ActionResult<Company> Create(CreateCompanyRequest request)
         {
-            if (companies.Exists(company => company.Name.Equals(request.Name)))
+            if (Companies.Exists(company => company.Name.Equals(request.Name)))
             {
                 return BadRequest();
             }
             Company companyCreated = new Company(request.Name);
-            companies.Add(companyCreated);
+            Companies.Add(companyCreated);
             return StatusCode(StatusCodes.Status201Created, companyCreated);
         }
 
         [HttpGet("{id}")]
         public ActionResult<Company> GetOne(string id)
         {
-            var company = companies.FirstOrDefault(company => company.Id == id);
+            var company = Companies.FirstOrDefault(company => company.Id == id);
 
             return company == null ? StatusCode(StatusCodes.Status404NotFound) : StatusCode(StatusCodes.Status200OK, company);
         }
@@ -31,13 +35,13 @@ namespace CompanyApi.Controllers
         [HttpGet]
         public ActionResult<List<Company>> GetAll()
         {
-            return StatusCode(StatusCodes.Status200OK, companies);
+            return StatusCode(StatusCodes.Status200OK, Companies);
         }
 
         [HttpPut("{id}")]
         public ActionResult Put(UpdateCompanyRequest company, string id)
         {
-            var result = companies.FirstOrDefault(company => company.Id == id);
+            var result = Companies.FirstOrDefault(company => company.Id == id);
             if (result == null)
             {
                 return StatusCode(StatusCodes.Status404NotFound);
@@ -51,13 +55,32 @@ namespace CompanyApi.Controllers
         {
             var pageNumber = int.Parse(page);
             var pageSize = int.Parse(size);
-            var result = companies.Skip((pageNumber - 1) * pageSize).Take(pageSize);
+            var result = Companies.Skip((pageNumber - 1) * pageSize).Take(pageSize);
             return StatusCode(StatusCodes.Status200OK, result);
         }
-        [HttpDelete]
-        public void ClearData()
-        { 
-            companies.Clear();
+
+        [HttpPost("{companyId}")]
+        public  ActionResult<Employee> CreateEmployee(CreateEmployeeRequest employee, string companyId)
+        {
+            if (!Companies.Exists(company => company.Id.Equals(companyId)))
+            {
+                return BadRequest();
+            }
+
+            Employee e = new Employee(employee.Name);
+            var company =Companies.FirstOrDefault(com => com.Id == companyId);
+            company.Employees.Add(e);
+            return StatusCode(StatusCodes.Status201Created, e);
         }
+
+
+        [HttpDelete("{companyId}/{employeeId}")]
+        public ActionResult DeleteEmployee(string companyId, string employeeId)
+        {
+            var company = Companies.FirstOrDefault(com => com.Id == companyId);
+            company?.Employees.RemoveAll(emp => emp.Id == employeeId);
+            return StatusCode(StatusCodes.Status200OK);
+        }
+
     }
 }
