@@ -11,7 +11,7 @@ namespace CompanyApi.Controllers
         [HttpPost]
         public ActionResult<Company> Create(CreateCompanyRequest request)
         {
-            if (hasCompany(request.Name))
+            if (HasCompanyName(request.Name))
             {
                 return BadRequest();
             }
@@ -26,11 +26,16 @@ namespace CompanyApi.Controllers
             companies.Clear();
         }
 
-        //[HttpGet]
-        //public ActionResult<Company> Get(int id)
-        //{
-        //    //return StatusCode(StatusCodes.Status200OK, companies);
-        //}
+        [HttpGet("{id}")]
+        public ActionResult<Company> Get(string id)
+        {
+            Company? company = GetCompanyById(id);
+            if (company is null)
+            {
+                return NotFound();
+            }
+            return StatusCode(StatusCodes.Status200OK, companies.First(company => company.Id.Equals(id)));
+        }
 
         [HttpGet]
         public ActionResult<List<Company>> GetAll()
@@ -38,9 +43,14 @@ namespace CompanyApi.Controllers
             return StatusCode(StatusCodes.Status200OK, companies);
         }
 
-        private bool hasCompany(string name)
+        private bool HasCompanyName(string name)
         {
             return companies.Exists(company => company.Name.Equals(name));
+        }
+
+        private Company? GetCompanyById(string id)
+        {
+            return companies.Where(company => company.Id.Equals(id)).FirstOrDefault();
         }
     }
 }

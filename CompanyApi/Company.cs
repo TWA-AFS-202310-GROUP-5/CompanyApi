@@ -11,5 +11,16 @@
         public string Id { get; set; }
 
         public string Name { get; set; }
+
+        public override bool Equals(object? obj)
+        {
+            Company? company = obj as Company;
+            return Id.Equals(company?.Id);
+        }
+
+        public override int GetHashCode()
+        {
+            return Id.GetHashCode();
+        }
     }
 }
