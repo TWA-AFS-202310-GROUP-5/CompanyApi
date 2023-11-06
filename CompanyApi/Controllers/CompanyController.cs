@@ -93,5 +93,31 @@ namespace CompanyApi.Controllers
             employees[companyId].Add(employeeCreated);
             return StatusCode(StatusCodes.Status201Created, employeeCreated);
         }
+
+        [HttpDelete("{companyId}/employees/{employeeId}")]
+        public ActionResult<Company> DeleteEmployee([FromRoute] string companyId, [FromRoute] string employeeId)
+        {
+            Company? company = GetCompanyById(companyId);
+            if (company is null)
+            {
+                return NotFound();
+            }
+
+            if (!employees.ContainsKey(companyId))
+            {
+                return NotFound();
+            }
+
+            Employee? employee = employees[companyId].Find(employee => employee.Id == employeeId);
+            if (employee is null)
+            {
+                return NotFound();
+            }
+            else
+            {
+                employees[companyId].Remove(employee);
+                return StatusCode(StatusCodes.Status204NoContent, employee);
+            }
+        }
     }
 }
