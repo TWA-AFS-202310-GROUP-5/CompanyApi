@@ -74,7 +74,25 @@ POST https://{{hostname}}:{{port}}/api/companies/{companyId}
 
 ## AC7 Delete Employee by Employee ID
 DELETE https://{{hostname}}:{{port}}/api/companies/{companyId}/employees/{employeeId}
-
 ## Response:
 ### Case1: Employee deleted success, return 204 no Content
 ### Case2: EmployeeId not found
+
+## AC8 Get Employees under a specific company
+GET https://{{hostname}}:{{port}}/api/companies/{companyId}
+
+## Response:
+### Case1: get employees success, return  200
+
+## AC9 Update Employee 
+PUT https://{{hostname}}:{{port}}/api/companies/{companyId}/employees/{employeeId}
+
+### Case1: Update success, return 204 no Content
+### Case: employeeId 404 not found
+
+## AC10 Delete Company
+DELETE https://{{hostname}}:{{port}}/api/companies/{companyId}
+
+## Response
+### Case1: Delete success, return 204 no Content
+### Case2: CompanyId 404 not found
