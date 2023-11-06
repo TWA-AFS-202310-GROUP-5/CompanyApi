@@ -44,6 +44,20 @@ namespace CompanyApi.Controllers
             return StatusCode(StatusCodes.Status200OK, returnCompanies);
         }
 
+        [HttpPut("{id}")]
+        public ActionResult<Company> UpdateCompany(string id, [FromBody] CreateCompanyRequest request)
+        {
+            Company? company = GetCompanyById(id);
+            if (company is null)
+            {
+                return NotFound();
+            }
+
+            company.Name = request.Name;
+
+            return StatusCode(StatusCodes.Status200OK, company);
+        }
+
         private bool HasCompanyName(string name)
         {
             return companies.Exists(company => company.Name.Equals(name));
