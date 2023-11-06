@@ -111,6 +111,23 @@ namespace CompanyApiTest
 
         }
 
+        [Fact]
+        public async Task Should_return_404__when_get_company_given_do_not_exit_company_id()
+        {
+            // Given
+            ClearDataAsync();
+
+            // When
+
+            HttpResponseMessage getResponseMessage = await httpClient.GetAsync("/api/companies/BlueSky Digital Media 1");
+
+            var company = await DeserializeTo<Company>(getResponseMessage);
+            // Then
+
+            Assert.Equal(HttpStatusCode.NotFound, getResponseMessage.StatusCode);
+
+        }
+
         private async Task<T?> DeserializeTo<T>(HttpResponseMessage httpResponseMessage)
         {
             string response = await httpResponseMessage.Content.ReadAsStringAsync();

@@ -26,7 +26,7 @@ namespace CompanyApi.Controllers
             var company = companies.FirstOrDefault(company => company.Id == id);
 
 
-            return StatusCode(StatusCodes.Status200OK, company);
+            return company == null ? StatusCode(StatusCodes.Status404NotFound) : StatusCode(StatusCodes.Status200OK, company);
         }
         [HttpGet]
         public ActionResult<List<Company>> GetAll()
