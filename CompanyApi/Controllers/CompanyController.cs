@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using System.Diagnostics.Eventing.Reader;
 
 namespace CompanyApi.Controllers
 {
@@ -27,9 +28,23 @@ namespace CompanyApi.Controllers
         }
 
         [HttpGet]
-        public List<Company> GetAll()
+        public ActionResult<List<Company>> GetAll()
         {
-            return companies.ToList();
+            return StatusCode(StatusCodes.Status200OK, companies);
         }
+
+        [HttpGet("{id}")]
+        public ActionResult<Company> Get(string id)
+        {
+            foreach (Company company in companies)
+            {
+                if (company.Id == id) 
+                {
+                    return company;
+                }
+            }   
+            return NotFound();
+        }
+
     }
 }
