@@ -73,7 +73,7 @@ namespace CompanyApiTest
         }
 
         [Fact]
-        public async Task Should_return_companies_with_status_ok_when_get_all_given_exists_companies()
+        public async Task Should_return_companies_with_status_ok_when_get_given_exists_companies()
         {
             //Given
             CreateCompanyRequest companyGiven1 = new CreateCompanyRequest { Name = "BlueSky Digital Media" };
@@ -93,7 +93,7 @@ namespace CompanyApiTest
         }
 
         [Fact]
-        public async Task Should_return_nothing_with_status_ok_when_get_all_given_no_exist_companies()
+        public async Task Should_return_nothing_with_status_ok_when_get_given_no_exist_companies()
         {
             //Given
 
@@ -116,10 +116,10 @@ namespace CompanyApiTest
 
             //When
             HttpResponseMessage httpResponseMessage = await httpClient.GetAsync($"api/companies/{companyReturnedFromPost?.Id}");
-            Company? compantReturnedFromGet = await httpResponseMessage.Content.ReadFromJsonAsync<Company>();
+            Company? companyReturnedFromGet = await httpResponseMessage.Content.ReadFromJsonAsync<Company>();
 
             //Then
-            Assert.Equal(companyReturnedFromPost, compantReturnedFromGet);
+            Assert.Equal(companyReturnedFromPost, companyReturnedFromGet);
             Assert.Equal(HttpStatusCode.OK, httpResponseMessage.StatusCode);
         }
 
@@ -130,15 +130,15 @@ namespace CompanyApiTest
 
             //When
             HttpResponseMessage message = await httpClient.GetAsync($"api/companies/{new Guid()}");
-            Company? compantReturnedFromGet = await message.Content.ReadFromJsonAsync<Company>();
+            Company? companyReturnedFromGet = await message.Content.ReadFromJsonAsync<Company>();
 
             //Then
-            Assert.Null(compantReturnedFromGet?.Name);
+            Assert.Null(companyReturnedFromGet?.Name);
             Assert.Equal(HttpStatusCode.NotFound, message.StatusCode);
         }
 
         [Fact]
-        public async Task Should_return_companies_in_given_page_with_status_ok_when_get_all_given_exists_companies_and_pageSize_and_pageIndex()
+        public async Task Should_return_companies_in_given_page_with_status_ok_when_get_given_exists_companies_and_pageSize_and_pageIndex()
         {
             //Given
             CreateCompanyRequest companyGiven1 = new CreateCompanyRequest { Name = "BlueSky Digital Media" };
@@ -162,7 +162,7 @@ namespace CompanyApiTest
         }
 
         [Fact]
-        public async Task Should_return_nothing_with_status_ok_when_get_all_given_not_enought_companies_for_pageSize_and_pageIndex()
+        public async Task Should_return_nothing_with_status_ok_when_get_given_not_enought_companies_for_pageSize_and_pageIndex()
         {
             //Given
 
@@ -173,6 +173,40 @@ namespace CompanyApiTest
             //Then
             Assert.Equal(0, result?.Count);
             Assert.Equal(HttpStatusCode.OK, httpResponseMessage.StatusCode);
+        }
+
+        [Fact]
+        public async Task Should_return_updated_company_with_status_ok_when_put_given_company_info_with_id_can_be_found()
+        {
+            //Given
+            CreateCompanyRequest companyGiven = new CreateCompanyRequest { Name = "BlueSky Digital Media" };
+            CreateCompanyRequest companyGivenNew = new CreateCompanyRequest { Name = "Google" };
+            var PostResult = await httpClient.PostAsJsonAsync("api/companies", companyGiven);
+            Company? companyReturnedFromPost = await PostResult.Content.ReadFromJsonAsync<Company>();
+
+            //When
+            HttpResponseMessage httpResponseMessage = await httpClient.PutAsJsonAsync($"api/companies/{companyReturnedFromPost?.Id}", companyGivenNew);
+            Company? result = await httpResponseMessage.Content.ReadFromJsonAsync<Company>();
+
+            //Then
+            Assert.Equal("Google", result?.Name);
+            Assert.Equal(companyReturnedFromPost?.Id, result?.Id);
+            Assert.Equal(HttpStatusCode.OK, httpResponseMessage.StatusCode);
+        }
+
+        [Fact]
+        public async Task Should_return_nothing_with_status_not_found_when_put_given_company_info_with_not_exist_id()
+        {
+            //Given
+            CreateCompanyRequest companyGivenNew = new CreateCompanyRequest { Name = "Google" };
+
+            //When
+            HttpResponseMessage message = await httpClient.PutAsJsonAsync($"api/companies/{new Guid()}", companyGivenNew);
+            Company? companyReturnedFromGet = await message.Content.ReadFromJsonAsync<Company>();
+
+            //Then
+            Assert.Null(companyReturnedFromGet?.Name);
+            Assert.Equal(HttpStatusCode.NotFound, message.StatusCode);
         }
     }
 }
