@@ -61,5 +61,13 @@ namespace CompanyApi.Controllers
             company.Name = request.Name;
             return NoContent();
         }
+
+        [HttpPost("{companyId}")]
+        public ActionResult CreateEmployeeByCompanyId(string companyId, [FromBody] CreateEmployeeRequest request)
+        {
+            Company company = companies.Find(company => company.Id == companyId);
+            Employee createdEmployee = company.AddEmployee(request);
+            return StatusCode(StatusCodes.Status201Created, createdEmployee);
+        }
     }
 }
