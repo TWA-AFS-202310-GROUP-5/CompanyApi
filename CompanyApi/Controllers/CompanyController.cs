@@ -128,5 +128,22 @@ namespace CompanyApi.Controllers
                 return Ok(company.Employees);
             }
         }
+
+        [HttpPut("{companyId}/employees/{employeeId}")]
+        public ActionResult UpdateEmployee(string companyId, string employeeId, EmployeeRequest employeeRequest)
+        {
+            var company = companies.FirstOrDefault(c => c.Id == companyId);
+            var employee = company?.Employees.FirstOrDefault(e => e.Id == employeeId);
+            if (employee == null)
+            {
+                return NotFound();
+            }
+            else
+            {
+                employee.Salary = employeeRequest.Salary;
+                employee.Name = employeeRequest.Name;
+                return NoContent();
+            }
+        }
     }
 }
