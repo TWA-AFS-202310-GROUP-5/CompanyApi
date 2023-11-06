@@ -26,10 +26,16 @@ namespace CompanyApi.Controllers
             companies.Clear();
         }
 
-        [HttpGet]
-        public ActionResult<Company> Get(int id)
-        {
+        //[HttpGet]
+        //public ActionResult<Company> Get(int id)
+        //{
+        //    //return StatusCode(StatusCodes.Status200OK, companies);
+        //}
 
+        [HttpGet]
+        public ActionResult<List<Company>> GetAll()
+        {
+            return StatusCode(StatusCodes.Status200OK, companies);
         }
 
         private bool hasCompany(string name)
