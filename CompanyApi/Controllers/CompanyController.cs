@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using CompanyApi.Dto;
+using Microsoft.AspNetCore.Mvc;
 
 namespace CompanyApi.Controllers
 {
@@ -9,7 +10,7 @@ namespace CompanyApi.Controllers
         private static List<Company> companies = new List<Company>();
 
         [HttpPost]
-        public ActionResult<Company> Create(CreateCompanyRequest request)
+        public ActionResult<Company> CreateCompany(CreateCompanyRequest request)
         {
             if (companies.Exists(company => company.Name.Equals(request.Name)))
             {
@@ -21,7 +22,7 @@ namespace CompanyApi.Controllers
         }
 
         [HttpGet]
-        public ActionResult<List<Company>> GetAll()
+        public ActionResult<List<Company>> GetAllCompanies()
         {
             return StatusCode(StatusCodes.Status200OK, companies);
         }
@@ -29,16 +30,12 @@ namespace CompanyApi.Controllers
         [HttpGet("{id}")]
         public ActionResult<Company> GetCompanyById(string id)
         {
-            Company company = companies.FirstOrDefault(x => x.Id == id);
-            if (company == null)
-            {
-                return BadRequest();
-            }
-            return StatusCode(StatusCodes.Status200OK, company);
+            Company? company = companies.FirstOrDefault(x => x.Id == id);
+            return company == null? BadRequest():Ok(company);
         }
 
         [HttpGet("range")]
-        public ActionResult<List<Company>> GetCompanyByRange([FromQuery(Name = "pageSize")]int pageSize, [FromQuery(Name = "pageIndex")] int pageIndex)
+        public ActionResult<List<Company>> GetCompaniesByRange([FromQuery(Name = "pageSize")]int pageSize, [FromQuery(Name = "pageIndex")] int pageIndex)
         {
             if (pageSize < 0 || pageIndex < 1)
             {
@@ -50,22 +47,18 @@ namespace CompanyApi.Controllers
             {
                 return StatusCode(StatusCodes.Status200OK, new List<Company>());
             }
-            try
-            {            
-                List<Company> companyList = companies.GetRange(startBound, endBound);
-                return StatusCode(StatusCodes.Status200OK, companyList);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(StatusCodes.Status200OK, new List<Company>());
-            }
+          
+            List<Company> companyList = companies.GetRange(startBound, endBound);
+            return StatusCode(StatusCodes.Status200OK, companyList);
+            
+
 
         }
 
         [HttpPut("{id}")]
-        public ActionResult Update([FromBody]UpdateCompanyRequest updateCompany, string id)
+        public ActionResult UpdateCompany([FromBody]UpdateCompanyRequest updateCompany, string id)
         {
-            Company company = companies.FirstOrDefault(c => c.Id == id);
+            Company? company = companies.FirstOrDefault(c => c.Id == id);
             if (company == null)
             {
                 return NotFound();
@@ -77,7 +70,7 @@ namespace CompanyApi.Controllers
         [HttpPost("{companyId}/employees")]
         public ActionResult<Company> AddEmployee([FromBody]CreateEmployeeRequest request, string companyId)
         {
-            Company company = companies.FirstOrDefault(company => company.Id == companyId);
+            Company? company = companies.FirstOrDefault(company => company.Id == companyId);
             if (company == null)
             {
                 return NotFound();
