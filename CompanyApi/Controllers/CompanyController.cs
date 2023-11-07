@@ -7,7 +7,7 @@ namespace CompanyApi.Controllers
     public class CompanyController : ControllerBase
     {
         private static List<Company> companies = new List<Company>();
-        private static Dictionary<string, List<Employee>> employees = new Dictionary<string, List<Employee>>();
+        private static Dictionary<string, List<Employee>> companyEmployeesMap = new Dictionary<string, List<Employee>>();
 
         [HttpPost]
         public ActionResult<Company> Create(CreateCompanyRequest request)
@@ -25,7 +25,7 @@ namespace CompanyApi.Controllers
         public void ClearData()
         {
             companies.Clear();
-            employees.Clear();
+            companyEmployeesMap.Clear();
         }
 
         [HttpGet("{id}")]
@@ -36,14 +36,14 @@ namespace CompanyApi.Controllers
             {
                 return NotFound();
             }
-            return StatusCode(StatusCodes.Status200OK, companies.First(company => company.Id.Equals(id)));
+            return Ok(companies.First(company => company.Id.Equals(id)));
         }
 
         [HttpGet]
-        public ActionResult<List<Company>> GetCompanyByPage([FromQuery] int pageSize = 0, int pageIndex = 0)
+        public ActionResult<List<Company>> GetCompanyByPage([FromQuery] int pageSize = 0, [FromQuery] int pageIndex = 0)
         {
             var returnCompanies = pageSize > 0 ? companies.Skip(pageSize * (pageIndex - 1)).Take(pageSize) : companies;
-            return StatusCode(StatusCodes.Status200OK, returnCompanies);
+            return Ok(returnCompanies);
         }
 
         [HttpPut("{id}")]
@@ -57,7 +57,7 @@ namespace CompanyApi.Controllers
 
             company.Name = request.Name;
 
-            return StatusCode(StatusCodes.Status200OK, company);
+            return Ok(company);
         }
 
         private bool HasCompanyName(string name)
@@ -79,18 +79,18 @@ namespace CompanyApi.Controllers
                 return BadRequest();
             }
 
-            if(!employees.ContainsKey(companyId))
+            if(!companyEmployeesMap.ContainsKey(companyId))
             {
-                employees[companyId] = new List<Employee>();
+                companyEmployeesMap[companyId] = new List<Employee>();
             }
 
-            if(employees[companyId].Find(employee => employee.Name == request.Name) is not null)
+            if(companyEmployeesMap[companyId].Find(employee => employee.Name == request.Name) is not null)
             {
                 return BadRequest();
             }
 
             Employee employeeCreated = new Employee(request.Name);
-            employees[companyId].Add(employeeCreated);
+            companyEmployeesMap[companyId].Add(employeeCreated);
             return StatusCode(StatusCodes.Status201Created, employeeCreated);
         }
 
@@ -103,19 +103,19 @@ namespace CompanyApi.Controllers
                 return NotFound();
             }
 
-            if (!employees.ContainsKey(companyId))
+            if (!companyEmployeesMap.ContainsKey(companyId))
             {
                 return NotFound();
             }
 
-            Employee? employee = employees[companyId].Find(employee => employee.Id == employeeId);
+            Employee? employee = companyEmployeesMap[companyId].Find(employee => employee.Id == employeeId);
             if (employee is null)
             {
                 return NotFound();
             }
             else
             {
-                employees[companyId].Remove(employee);
+                companyEmployeesMap[companyId].Remove(employee);
                 return StatusCode(StatusCodes.Status204NoContent, employee);
             }
         }
