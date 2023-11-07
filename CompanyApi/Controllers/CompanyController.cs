@@ -89,7 +89,7 @@ namespace CompanyApi.Controllers
                 return BadRequest();
             }
 
-            Employee employeeCreated = new Employee(request.Name);
+            Employee employeeCreated = new Employee(request.Name, request.Salary);
             companyEmployeesMap[companyId].Add(employeeCreated);
             return StatusCode(StatusCodes.Status201Created, employeeCreated);
         }
