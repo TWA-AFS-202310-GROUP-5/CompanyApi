@@ -4,12 +4,12 @@
 @port=5116
 
 # Company APIS
-## POST /api/Companies
-## GET /api/Companies
-## GET /api/Companies/{companyID}
-## GET /api/Companies?pageSize=2&pageIndex=3
-## PUT /api/Companies/{companyID}
-## DELETE /api/Companies/{companyID} ( Delete employees uner this company in same time )
+## POST /api/companies
+## GET /api/companies
+## GET /api/companies/{companyId}
+## GET /api/companies?pageSize=2&pageIndex=3
+## PUT /api/companies/{companyId}
+## DELETE /api/companies/{companyId} ( Delete employees under this company in same time )
 
 
 ## AC1 Create Company API 
@@ -21,41 +21,103 @@ Content-Type: application/json; charset=utf-8
 }
 
 ## Response:
-### Case1:  Company Created Success, Return Company created with Status Created( 201 )
-### Case2:  Company Name Exsiting, Return 400 Bad request
-### Case3:  Other Bad Reqeust ( Request Body Not Valid )
+### Case1:  Company Created Success, Return Company created with Status CREATED( 201 )
+### Case2:  Company Name Exsiting, Return 400 BAD REQUEST
+### Case3:  Other Bad Reqeust ( Request Body Not Valid ), Return 400 BAD REQUEST
 
 ######################################################################################
 
 ## AC2 Get All Compaines
 GET https://{{hostname}}:{{port}}/api/companies
 
-### Response: OK 200 with List of Companes
+### Response: OK 200 with List of Companies
 
 ######################################################################################
 
 ## AC3 Get Company By ID
-GET https://{{hostname}}:{{port}}/api/Companies/{companyID}
+GET https://{{hostname}}:{{port}}/api/companies/{companyId}
 
 ### Response: 
 ### Case1: OK 200 with The Company Found
 ### Case2: 404 Company NOT Found
 
 ## AC4 GET Companies with Paging 
-GET https://{{hostname}}:{{port}}/api/Companies?pageSize=2&pageIndex=3
-### Response: OK 200 with List of Companes
+GET https://{{hostname}}:{{port}}/api/companies?pageSize=2&pageIndex=3
+### Response: OK 200 with List of Companies
 
 ######################################################################################
 
 ## AC5 Update Company 
-PUT https://{{hostname}}:{{port}}/api/Companies/{companyID}
+PUT https://{{hostname}}:{{port}}/api/companies/{companyId}
 Content-Type: application/json; charset=utf-8
 
 {
   "name": Google
 }
 ### Response: 
-### Case1: Sucess, 204 NO Content
+### Case1: Sucess, OK 200 NO with updated Company
 ### Case2: 404 Company NOT Found
+
+######################################################################################
+
+## AC10 Delete Company by ID 
+DELETE https://{{hostname}}:{{port}}/api/companies/{companyId}
+Content-Type: application/json; charset=utf-8
+
+### Response: 
+### Case1:  Company Deleted Success, Return Company with Status NO CONTENT( 204 )
+### Case2:  Company Not Found, Return Status NOT FOUND( 404 )
+
+######################################################################################
+
+
+# Employees APIS
+## POST /api/companies/companyID/employees
+## GET /api/companies/companyID/employees
+## PUT /api/companies/companyID/employees/{employeeId}
+## DELETE /api/companies/companyID/employees/{employeeId}
+
+
+## AC6 Create Employee API 
+PUT https://{{hostname}}:{{port}}/api/companies/{companyId}/employees
+Content-Type: application/json; charset=utf-8
+
+{
+  "name": John
+}
+### Response: 
+### Case1:  Employee Created Success, Return Employee created in the company with companyId with Status CREATED( 201 )
+### Case2:  Employee Name Exsiting, Return 400 BAD REQUEST
+### Case3:  Other Bad Reqeust ( Request Body Not Valid ), Return 400 BAD REQUEST
+
+######################################################################################
+
+## AC7 Delete Employee by ID 
+DELETE https://{{hostname}}:{{port}}/api/companies/{companyId}/employees/{employeeId}
+Content-Type: application/json; charset=utf-8
+
+### Response: 
+### Case1:  Employee Deleted Success, Return Employee in the company with companyId found with Status NO CONTENT( 204 )
+### Case2:  Employee/Company Not Found, Return Status NOT FOUND( 404 )
+
+######################################################################################
+
+## AC8 Get All Employees in company with companyId
+GET https://{{hostname}}:{{port}}/api/companies/{companyId}/employees
+
+### Response: OK 200 with List of Employees in the company with companyId
+
+######################################################################################
+
+## AC9 Update Employee
+PUT https://{{hostname}}:{{port}}/api/companies/{companyId}/employees/{employeeId}
+Content-Type: application/json; charset=utf-8
+
+{
+  "name": John
+}
+### Response: 
+### Case1: Employee update Sucess, 200 OK with updated Employee
+### Case2: 404 Employee NOT Found
 
 ######################################################################################
