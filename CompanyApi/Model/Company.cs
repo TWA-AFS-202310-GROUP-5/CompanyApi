@@ -1,5 +1,4 @@
-﻿
-namespace CompanyApi
+﻿namespace CompanyApi
 {
     public class Company
     {
