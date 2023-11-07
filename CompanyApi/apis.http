@@ -63,7 +63,7 @@ Content-Type: application/json; charset=utf-8
 ######################################################################################
 
 ## AC6 add employee 
-POST  https://{{hostname}}:{{port}}/api/employees/{companyId}
+POST  https://{{hostname}}:{{port}}/api/Companies/{companyId}
 Content-Type: application/json; charset=utf-8
 
 {
@@ -73,8 +73,59 @@ Content-Type: application/json; charset=utf-8
 
 ## Response:
 ### Case1:  employee  Created Success, Return employee  created with Status Created( 201 )
-### Case2:  employee 
-Name Exsiting, Return 400 Bad request
-### Case3:  Other Bad Reqeust ( Request Body Not Valid )
+### Case2:  employee Name Exsiting, Return 400 Bad request
+
+######################################################################################
+
+## AC7 delete employee 
+DELETE  https://{{hostname}}:{{port}}/api/Companies/{companyId}/{employeeId}
+Content-Type: application/json; charset=utf-8
+
+## Response:
+### Case1:  employee  deleted Success, Return  with Status Created( 200 )
+
+######################################################################################
+
+######################################################################################
+
+## AC8  obtain list of all employee under a specific company
+GET  https://{{hostname}}:{{port}}/api/Companies/{companyId}
+Content-Type: application/json; charset=utf-8
+
+### Response: 
+### Case1: OK 200 with The Company Found and all employees belong to the company
+### Case2: 404 Company NOT Found
+## Response:
+
+######################################################################################
+
+
+######################################################################################
+
+## AC9 update basic information of a specific employee under a specific company 
+PUT  https://{{hostname}}:{{port}}/api/Companies/{companyId}/{employeeId}
+Content-Type: application/json; charset=utf-8
+
+{
+
+  "name": "New Name"
+}
+
+## Response:
+### Case1:  employee  updated Success, Return  with 204 NO Content
+### Case2: company does not exit, return 404
+### Case3: employee does not exit, return 404
+
+######################################################################################
+
+## AC10 delete a specific company, and all employees belong to this company should alsodeleted
+
+DELETE  https://{{hostname}}:{{port}}/api/Companies/{companyId}
+Content-Type: application/json; charset=utf-8
+
+
+## Response:
+### Case1:  company  deleted Success, Return  with 200
+
 
 ######################################################################################
