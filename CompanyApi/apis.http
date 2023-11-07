@@ -42,7 +42,7 @@ GET https://{{hostname}}:{{port}}/api/Companies/{companyID}
 ### Case2: 404 Company NOT Found
 
 ## AC4 GET Companies with Paging 
-GET https://{{hostname}}:{{port}}/api/Companies?pageSize=2&pageIndex=3
+GET https://{{hostname}}:{{port}}/api/Companies/range?pageSize=2&pageIndex=3
 ### Response: OK 200 with List of Companes
 
 ######################################################################################
@@ -60,7 +60,7 @@ Content-Type: application/json; charset=utf-8
 
 ######################################################################################
 ## AC6 Add Employee
-POST https://{{hostname}}:{{port}}/api/Companies/{companyID}
+POST https://{{hostname}}:{{port}}/api/Companies/{companyID}/employees
 Content-Type: application/json; charset=utf-8
 
 {
@@ -75,7 +75,7 @@ Content-Type: application/json; charset=utf-8
 
 ######################################################################################
 ## AC7 Delete Employee
-DELETE https://{{hostname}}:{{port}}/api/Companies/{companyID}?employeeId=2
+DELETE https://{{hostname}}:{{port}}/api/Companies/{companyID}/employees?employeeId=2
 
 ### Response: 
 ### Case1:  Employee Delete Success, Return 204 NO Content

@@ -25,13 +25,13 @@ namespace CompanyApiTest
             // Given
             await ClearDataAsync();
             Company companyGiven = new Company("BlueSky Digital Media");
-            
+
             // When
             HttpResponseMessage httpResponseMessage = await httpClient.PostAsync(
-                "/api/companies", 
+                "/api/companies",
                 SerializeObjectToContent(companyGiven)
             );
-           
+
             // Then
             Assert.Equal(HttpStatusCode.Created, httpResponseMessage.StatusCode);
             Company? companyCreated = await DeserializeTo<Company>(httpResponseMessage);
@@ -50,7 +50,7 @@ namespace CompanyApiTest
             // When
             await httpClient.PostAsync("/api/companies", SerializeObjectToContent(companyGiven));
             HttpResponseMessage httpResponseMessage = await httpClient.PostAsync(
-                "/api/companies", 
+                "/api/companies",
                 SerializeObjectToContent(companyGiven)
             );
             // Then
@@ -63,10 +63,10 @@ namespace CompanyApiTest
             // Given
             await ClearDataAsync();
             StringContent content = new StringContent("{\"unknownField\": \"BlueSky Digital Media\"}", Encoding.UTF8, "application/json");
-          
+
             // When
             HttpResponseMessage httpResponseMessage = await httpClient.PostAsync("/api/companies", content);
-           
+
             // Then
             Assert.Equal(HttpStatusCode.BadRequest, httpResponseMessage.StatusCode);
         }
@@ -214,11 +214,11 @@ namespace CompanyApiTest
             CreateCompanyRequest companyCreate = new CreateCompanyRequest { Name = "Test" };
             HttpResponseMessage httpResponseMessageCreate = await httpClient.PostAsJsonAsync(companyUri, companyCreate);
             Company company = await httpResponseMessageCreate.Content.ReadFromJsonAsync<Company>();
-            CreateEmployeeRequest givenEmployee = new CreateEmployeeRequest {  Name = "Wang", Salary = 6000 };
-            
-            HttpResponseMessage httpResponseMessageAddEmp = await httpClient.PostAsJsonAsync($"{companyUri}/{company.Id}", givenEmployee);
+            CreateEmployeeRequest givenEmployee = new CreateEmployeeRequest { Name = "Wang", Salary = 6000 };
+
+            HttpResponseMessage httpResponseMessageAddEmp = await httpClient.PostAsJsonAsync($"{companyUri}/{company.Id}/employees", givenEmployee);
             Employee createdEmployee = await httpResponseMessageAddEmp.Content.ReadFromJsonAsync<Employee>();
-            
+
             Assert.NotNull(createdEmployee);
             Assert.NotNull(createdEmployee.Id);
             Assert.Equal(givenEmployee.Name, createdEmployee.Name);
@@ -231,8 +231,8 @@ namespace CompanyApiTest
             await ClearDataAsync();
             CreateEmployeeRequest givenEmployee = new CreateEmployeeRequest { Name = "Wang", Salary = 6000 };
             string fakeCompanyId = "111";
-            
-            HttpResponseMessage httpResponseMessageAddEmp = await httpClient.PostAsJsonAsync($"{companyUri}/{fakeCompanyId}", givenEmployee);
+
+            HttpResponseMessage httpResponseMessageAddEmp = await httpClient.PostAsJsonAsync($"{companyUri}/{fakeCompanyId}/employees", givenEmployee);
 
 
             Assert.Equal(HttpStatusCode.NotFound, httpResponseMessageAddEmp.StatusCode);
@@ -246,13 +246,12 @@ namespace CompanyApiTest
             HttpResponseMessage httpResponseMessageCreate = await httpClient.PostAsJsonAsync(companyUri, companyCreate);
             Company company = await httpResponseMessageCreate.Content.ReadFromJsonAsync<Company>();
             CreateEmployeeRequest givenEmployee = new CreateEmployeeRequest { Name = "Wang", Salary = 6000 };
-            HttpResponseMessage httpResponseMessageAddEmp = await httpClient.PostAsJsonAsync($"{companyUri}/{company.Id}", givenEmployee);
+            HttpResponseMessage httpResponseMessageAddEmp = await httpClient.PostAsJsonAsync($"{companyUri}/{company.Id}/employees", givenEmployee);
             Employee createdEmployee = await httpResponseMessageAddEmp.Content.ReadFromJsonAsync<Employee>();
 
-            HttpResponseMessage httpResponseMessageDeleteEmp = await httpClient.DeleteAsync($"{companyUri}/{company.Id}?employeeId={createdEmployee.Id}");
+            HttpResponseMessage httpResponseMessageDeleteEmp = await httpClient.DeleteAsync($"{companyUri}/{company.Id}/employees?employeeId={createdEmployee.Id}");
 
             Assert.Equal(HttpStatusCode.NoContent, httpResponseMessageDeleteEmp.StatusCode);
-            
 
         }
 
@@ -263,9 +262,9 @@ namespace CompanyApiTest
             CreateCompanyRequest companyCreate = new CreateCompanyRequest { Name = "Test" };
             HttpResponseMessage httpResponseMessageCreate = await httpClient.PostAsJsonAsync(companyUri, companyCreate);
             Company company = await httpResponseMessageCreate.Content.ReadFromJsonAsync<Company>();
-            
+
             string fakeEmployeeId = "111";
-            HttpResponseMessage httpResponseMessageDeleteEmp = await httpClient.DeleteAsync($"{companyUri}/{company.Id}?employeeId={fakeEmployeeId}");
+            HttpResponseMessage httpResponseMessageDeleteEmp = await httpClient.DeleteAsync($"{companyUri}/{company.Id}/employees?employeeId={fakeEmployeeId}");
 
 
             Assert.Equal(HttpStatusCode.NotFound, httpResponseMessageDeleteEmp.StatusCode);

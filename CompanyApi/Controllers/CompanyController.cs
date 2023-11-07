@@ -74,7 +74,7 @@ namespace CompanyApi.Controllers
             return StatusCode(StatusCodes.Status204NoContent);
         }
 
-        [HttpPost("{companyId}")]
+        [HttpPost("{companyId}/employees")]
         public ActionResult<Company> AddEmployee([FromBody]CreateEmployeeRequest request, string companyId)
         {
             Company company = companies.FirstOrDefault(company => company.Id == companyId);
@@ -88,7 +88,7 @@ namespace CompanyApi.Controllers
             return StatusCode(StatusCodes.Status201Created, employeeCreated);
         }
 
-        [HttpDelete("{companyId}")]
+        [HttpDelete("{companyId}/employees")]
         public ActionResult<List<Company>> DeleteEmployeeById([FromQuery(Name = "employeeId")] string employeeId, string companyId)
         {
             Company company = companies.FirstOrDefault(company => company.Id == companyId);
