@@ -84,3 +84,35 @@ DELETE https://{{hostname}}:{{port}}/api/Companies/{companyID}/employees?employe
 
 
 ######################################################################################
+## AC8 Get Employee List By Company ID
+GET https://{{hostname}}:{{port}}/api/Companies/{companyID}/employees
+
+### Response: 
+### Case1:  OK 200 with The Employees Found
+### Case2:  404 Company NOT Found
+
+
+######################################################################################
+## AC9 Update Specific Employee in Company
+PUT https://{{hostname}}:{{port}}/api/Companies/{companyID}/employees?employeeId=2
+Content-Type: application/json; charset=utf-8
+
+{
+  "name": Tom,
+  "
+### Response: 
+### Case1: Sucess, 204 NO Content
+### Case2: 404 Company NOT Found
+### Case2: 404 Employee NOT Found
+
+
+######################################################################################
+## AC10 Delete Company
+DELETE https://{{hostname}}:{{port}}/api/Companies/{companyID}
+
+### Response: 
+### Case1:  Company Delete Success, Return 204 NO Content
+### Case2:  404 Company ID NOT Found
+
+
+######################################################################################
